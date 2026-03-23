@@ -7,7 +7,7 @@ const kStorageKeyPrefix = "WL_State_";
 let gEnabled = false;
 
 // =========================
-// System Prompt (replaces toggl)
+// System Prompt
 // =========================
 const kSystemPrompt = `Whisperlands RPG: Every response MUST end with ONE <whub> XML block. All fields in roleplay language.
 
@@ -88,57 +88,6 @@ const kCrossEffects = {
     lophius:  { pos: { corvus: 1 },                 neg: { scorpius: -1 } },
     hyaena:   { pos: {},                            neg: { elephas: -1, corvus: -1 } }
 };
-
-        // Current region lore — neutral regions
-        if (!regionFound) {
-            for (const [id, data] of Object.entries(kWorldLore.neutral)) {
-                if (region.includes(id) || region.includes(data.name.toLowerCase().split(" ")[0])) {
-                    lines.push(`\n[CURRENT REGION: ${data.name}]`);
-                    lines.push(data.desc);
-                    break;
-                }
-            }
-        }
-
-        // NPCs present in scene — inject their lore
-        if (gState.npcs && gState.npcs.length > 0) {
-            for (const npc of gState.npcs) {
-                const npcName = (npc.name || "").toLowerCase();
-                for (const [id, npcData] of Object.entries(kWorldLore.npcs)) {
-                    if (npcName.includes(id) || npcName.includes(npcData.name.split(" ")[0].toLowerCase())) {
-                        lines.push(`\n[NPC: ${npcData.name}] Seal: ${npcData.seal}, Role: ${npcData.role}`);
-                        lines.push(npcData.desc);
-                        break;
-                    }
-                }
-            }
-        }
-
-        // High-relation factions
-        const highRelSeals = [];
-        for (const [sealId, data] of Object.entries(gState.seals)) {
-            if (Math.abs(data.v) >= 5) {
-                highRelSeals.push(sealId);
-            }
-        }
-
-        if (highRelSeals.length > 0) {
-            lines.push(`\n[RELEVANT FACTIONS — high relation]`);
-            for (const sealId of highRelSeals) {
-                const regionData = kWorldLore.regions[sealId];
-                if (regionData) {
-                    lines.push(`${regionData.name} (${regionData.god}): Attitude: ${regionData.attitude}`);
-                }
-            }
-        }
-
-        lines.push("[/WHISPERLANDS WORLD]");
-        return lines.join("\n");
-    } catch (e) {
-        console.error("[WL] BuildLoreInjection error:", e);
-        return "";
-    }
-}
 
 // =========================
 // State Management
@@ -611,60 +560,15 @@ function UpdateStatusDisplay() {
         $summary.text("Disabled — not injecting prompts.");
     }
 }
+
 // =========================
 // Initialize
 // =========================
 jQuery(async () => {
     const stContext = SillyTavern.getContext();
-
-    // Load settings HTML
-    try {
-        const settingsHtml = await $.get(kSettingsFile);
-        const $extensions = $("#extensions_settings");
-        const $existing = $extensions.find(".whisperlands-settings");
-        if ($existing.length > 0)
-            $existing.replaceWith(settingsHtml);
-        else
-            $extensions.append(settingsHtml);
-        } catch (e) {
-        console.warn("[WL] No settings panel found, continuing without.");
-    }
-
-    // Toggle handler
-    const savedEnabled = localStorage.getItem("WL_Enabled");
-    gEnabled = savedEnabled === "true";
-
-    const $toggle = $("#wl_enabled");
-    $toggle.prop("checked", gEnabled);
-    UpdateStatusDisplay();
-
-    $toggle.on("change", function() {
-        gEnabled = $(this).is(":checked");
-        localStorage.setItem("WL_Enabled", gEnabled);
-        UpdateStatusDisplay();
-        if (gEnabled) {
-            InjectPrompt();
-        } else {
-            stContext.setExtensionPrompt(injectionId, "", 1, 0);
-        }
-    });
-
-    // Reset button
-    $("#wl_reset_state").on("click", function() {
-        if (confirm("Reset Whisperlands state for this chat?")) {
-            gState = JSON.parse(JSON.stringify(kDefaultState));
-            SaveState();
-            UpdateStatusDisplay();
-        }
-    });
-
-    // Load state for current chat
-    LoadState();
-
-    // Register prompt injection
     const injectionId = "WL_StateInjection";
 
-        function InjectPrompt() {
+    function InjectPrompt() {
         try {
             if (!gEnabled) {
                 stContext.setExtensionPrompt(injectionId, "", 1, 0);
@@ -678,6 +582,51 @@ jQuery(async () => {
         }
     }
 
+    // Load settings HTML
+    try {
+        const settingsHtml = await $.get(kSettingsFile);
+        const $extensions = $("#extensions_settings");
+        const $existing = $extensions.find(".whisperlands-settings");
+        if ($existing.length > 0)
+            $existing.replaceWith(settingsHtml);
+        else
+            $extensions.append(settingsHtml);
+    } catch (e) {
+        console.warn("[WL] No settings panel found, continuing without.");
+    }
+
+    // Toggle handler
+    const savedEnabled = localStorage.getItem("WL_Enabled");
+    gEnabled = savedEnabled === "true";
+
+    const $toggle = $("#wl_enabled");
+    $toggle.prop("checked", gEnabled);
+    UpdateStatusDisplay();
+
+    $toggle.on("change", function () {
+        gEnabled = $(this).is(":checked");
+        localStorage.setItem("WL_Enabled", String(gEnabled));
+        UpdateStatusDisplay();
+        if (gEnabled) {
+            InjectPrompt();
+        } else {
+            stContext.setExtensionPrompt(injectionId, "", 1, 0);
+        }
+    });
+
+    // Reset button
+    $("#wl_reset_state").on("click", function () {
+        if (confirm("Reset Whisperlands state for this chat?")) {
+            gState = JSON.parse(JSON.stringify(kDefaultState));
+            SaveState();
+            UpdateStatusDisplay();
+        }
+    });
+
+    // Load state for current chat
+    LoadState();
+
+    // Register generation hook
     if (stContext.eventTypes.GENERATION_STARTED) {
         stContext.eventSource.on(stContext.eventTypes.GENERATION_STARTED, InjectPrompt);
     }
