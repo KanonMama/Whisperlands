@@ -35,7 +35,9 @@ Labels: −10..−7 Враг/Ненависть, −6..−4 Враждебнос
 
 Cross-effects (±2+ trigger): corvus↑: elephas+1 lophius+1 hyaena−1 serpens−1 | elephas↑: corvus+1 hyaena−1 serpens−1 | scorpius↑: serpens+1 lophius−1 elephas−1 | serpens↑: scorpius+1 corvus−1 elephas−1 | lophius↑: corvus+1 scorpius−1 | hyaena↑(+3+): elephas−1 corvus−1
 
-Coins in <currency> ONLY, not <inv>. NPCs: only present in scene. rom=true after romantic interaction. ??? for unknown values until established.`;
+Coins in <currency> ONLY, not <inv>. NPCs: only present in scene. rom=true after romantic interaction. ??? for unknown values until established.
+
+STRICT: The [WHISPERLANDS WORLD] block is absolute canon. Do NOT invent new gods, rename existing gods, change their gender, or contradict any world data provided. Build on it, never replace it.`;
 
 // =========================
 // Default State
