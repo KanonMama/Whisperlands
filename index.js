@@ -11,7 +11,7 @@ const kStorageKeyPrefix = "WL_State_";
 const kSystemPrompt = `Whisperlands RPG: Every response MUST end with ONE <whub> XML block. All fields in roleplay language.
 
 <whub day="(N)" time="(Morning/Day/Evening/Night)" loc="(location)" region="(seal territory or Neutral)">
-<player name="" race="(Human/Beastfolk/Demi-human)" rank="(Civilian/Initiate/Cultist/Disciple)" seal="(seal or None)" sigillati="(god name or —)" />
+<player name="" race="(Human/Beastfolk/Demi-human)" rank="(Civilian/Initiate/Cultist/Disciple)" seal="(seal or None)" sigillati="(god name or —)" status="(wanted/refugee/exile/noble/hero or —)" />
 <seals>
 <s id="corvus" v="(−10..10)" c="(±N)" label="" />
 <s id="elephas" v="" c="" label="" />
@@ -136,14 +136,15 @@ function ParseWhub(text) {
         region: whubMatch[4]
     };
 
-    const playerMatch = text.match(/<player\s+name="(.*?)"\s+race="(.*?)"\s+rank="(.*?)"\s+seal="(.*?)"\s+sigillati="(.*?)"\s*\/>/);
+        const playerMatch = text.match(/<player\s+name="(.*?)"\s+race="(.*?)"\s+rank="(.*?)"\s+seal="(.*?)"\s+sigillati="(.*?)"\s*(?:status="(.*?)")?\s*\/>/);
     if (playerMatch) {
         result.player = {
             name: playerMatch[1],
             race: playerMatch[2],
             rank: playerMatch[3],
             seal: playerMatch[4],
-            sigillati: playerMatch[5]
+            sigillati: playerMatch[5],
+            status: playerMatch[6] || "—"
         };
     }
 
@@ -328,22 +329,21 @@ function RenderSealBubble(id, data) {
 function RenderNpc(npc) {
     return `
     <div class="wl-npc-card">
-        <div class="wl-npc-header">
-            <div class="wl-npc-name-row">
-                <span class="wl-npc-icon">${npc.icon}</span>
-                <b class="wl-npc-name">${npc.name}</b>
-                ${npc.rom ? '<span class="wl-npc-rom">💜</span>' : ""}
-            </div>
-            <span class="wl-npc-tags">${npc.tags}</span>
-        </div>
-        <div class="wl-npc-stats">
+        <div class="wl-npc-left">
             <div class="wl-npc-orb">
                 <span>${npc.rel}</span>
             </div>
-            <div class="wl-npc-info">
-                <span class="wl-npc-label">${npc.label}</span>
-                <span class="wl-npc-rc">${npc.rc >= 0 ? "+" : ""}${npc.rc}</span>
+            <div class="wl-npc-name-col">
+                <div class="wl-npc-name-row">
+                    <span class="wl-npc-icon">${npc.icon}</span>
+                    <b class="wl-npc-name">${npc.name}</b>
+                    ${npc.rom ? '<span class="wl-npc-rom">💜</span>' : ""}
+                </div>
+                <span class="wl-npc-label">${npc.label}<span class="wl-npc-rc"> ${npc.rc >= 0 ? "+" : ""}${npc.rc}</span></span>
             </div>
+        </div>
+        <div class="wl-npc-right">
+            <span class="wl-npc-tags">${npc.tags}</span>
         </div>
     </div>`;
 }
@@ -351,12 +351,14 @@ function RenderNpc(npc) {
 function RenderInvItem(item) {
     return `
     <div class="wl-inv-item">
-        <div class="wl-inv-main">
-            <span class="wl-inv-qty">${item.qty}×</span>
+        <span class="wl-inv-qty">${item.qty}×</span>
+        <div class="wl-inv-info">
             <span class="wl-inv-name">${item.name}</span>
-            <span class="wl-inv-type">${item.type}</span>
+            <div class="wl-inv-meta">
+                <span class="wl-inv-type">${item.type}</span>
+                <span class="wl-inv-note">${item.note}</span>
+            </div>
         </div>
-        <div class="wl-inv-note">${item.note}</div>
     </div>`;
 }
 
@@ -376,6 +378,35 @@ function RenderFullHub() {
     let invHtml = "";
     for (const item of s.inventory) {
         invHtml += RenderInvItem(item);
+    }
+
+    // Currency inline
+    const currencyHtml = `
+    <div class="wl-currency-inline">
+        <span>🪙</span>
+        <span class="wl-currency-coin">${s.currency.coin}</span>
+        <span class="wl-currency-unit">${s.currency.unit}</span>
+        ${s.currency.goods !== "—" && s.currency.goods !== "None" ?
+            `<span class="wl-currency-goods-inline">(${s.currency.goods})</span>` : ""}
+    </div>`;
+
+    // Player status tag
+    let statusTag = "";
+    const rank = (s.player.rank || "").toLowerCase();
+    const tags = (s.player.status || "").toLowerCase();
+    if (tags.includes("wanted") || tags.includes("розыск")) {
+        statusTag = `<span class="wl-tag wl-tag-status-wanted">⚠ В розыске</span>`;
+    } else if (tags.includes("refugee") || tags.includes("беженец")) {
+        statusTag = `<span class="wl-tag wl-tag-status-refugee">🏚 Беженец</span>`;
+    } else if (tags.includes("exile") || tags.includes("изгнан")) {
+        statusTag = `<span class="wl-tag wl-tag-status-exile">⛓ Изгнанник</span>`;
+    } else if (tags.includes("noble") || tags.includes("знать")) {
+        statusTag = `<span class="wl-tag wl-tag-status-noble">👑 Знать</span>`;
+    } else if (tags.includes("hero") || tags.includes("герой")) {
+        statusTag = `<span class="wl-tag wl-tag-status-hero">⭐ Герой</span>`;
+    }
+    if (rank === "disciple") {
+        statusTag += `<span class="wl-tag wl-tag-status-noble">🔮 Ученик</span>`;
     }
 
     const questHtml = s.quest.name === "None" ? "" : `
@@ -402,18 +433,23 @@ function RenderFullHub() {
                 <span>✦ <b>Day ${s.day}</b></span>
                 <span class="wl-sep">│</span>
                 <span>${s.time}</span>
+                <span class="wl-sep">│</span>
+                ${currencyHtml}
             </div>
             <div class="wl-header-right">⚑ ${s.region}</div>
         </div>
 
         <div class="wl-section wl-player">
-            <div class="wl-player-name">👤 ${s.player.name}</div>
-            <div class="wl-player-tags">
-                <span class="wl-tag">${s.player.race}</span>
-                ${s.player.rank !== "???" ? `<span class="wl-tag">${s.player.rank}</span>` : ""}
-                <span class="wl-tag">⚙ ${s.player.seal}</span>
-                ${s.player.sigillati !== "—" && s.player.sigillati !== "No" ?
-                    `<span class="wl-tag wl-tag-special">✦ ${s.player.sigillati}</span>` : ""}
+            <div class="wl-player-left">
+                <div class="wl-player-name">👤 ${s.player.name}</div>
+                <div class="wl-player-tags">
+                    <span class="wl-tag">${s.player.race}</span>
+                    ${s.player.rank !== "???" ? `<span class="wl-tag">${s.player.rank}</span>` : ""}
+                    <span class="wl-tag">⚙ ${s.player.seal}</span>
+                    ${s.player.sigillati !== "—" && s.player.sigillati !== "No" ?
+                        `<span class="wl-tag wl-tag-special">✦ ${s.player.sigillati}</span>` : ""}
+                    ${statusTag}
+                </div>
             </div>
         </div>
 
@@ -428,24 +464,10 @@ function RenderFullHub() {
             ${npcsHtml}
         </div>` : ""}
 
-        <div class="wl-section wl-currency">
-            <div class="wl-section-title">🪙 CURRENCY</div>
-            <div class="wl-currency-row">
-                <div class="wl-coin-orb">
-                    <span>${s.currency.coin}</span>
-                </div>
-                <div class="wl-currency-info">
-                    <span class="wl-currency-unit">${s.currency.unit}</span>
-                    ${s.currency.goods !== "—" && s.currency.goods !== "None" ?
-                        `<span class="wl-currency-goods">${s.currency.goods}</span>` : ""}
-                </div>
-            </div>
-        </div>
-
         ${invHtml ? `
-        <div class="wl-section">
-            <div class="wl-section-title">🎒 INVENTORY</div>
-            ${invHtml}
+        <div class="wl-inv-bag">
+            <div class="wl-inv-title">🎒 INVENTORY</div>
+            <div class="wl-inv-grid">${invHtml}</div>
         </div>` : ""}
 
         ${questHtml}
