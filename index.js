@@ -450,18 +450,27 @@ function ProcessMessage(messageDiv, msgIndex) {
     ApplyCrossEffects(parsed);
     UpdateStateFromParsed(parsed);
 
-    // Remove raw XML from display
     const mesTextEl = messageDiv.querySelector(".mes_text");
     if (mesTextEl) {
-        mesTextEl.innerHTML = mesTextEl.innerHTML.replace(
-            /&lt;whub[\s\S]*?&lt;\/whub&gt;/g, ""
-        ).replace(
-            /<whub[\s\S]*?<\/whub>/g, ""
-        );
-
         // Remove existing hub if any
         const existingHub = mesTextEl.querySelector(".wl-hub");
         if (existingHub) existingHub.remove();
+
+        // Remove raw XML from display (both encoded and raw)
+        let html = mesTextEl.innerHTML;
+        
+        // Encoded version: &lt;whub...&lt;/whub&gt;
+        html = html.replace(/&lt;whub[\s\S]*?&lt;\/whub&gt;/g, "");
+        
+        // Raw version: <whub...</whub>
+        html = html.replace(/<whub[\s\S]*?<\/whub>/g, "");
+        
+        // Clean up leftover empty paragraphs and breaks
+        html = html.replace(/<p>\s*<\/p>/g, "");
+        html = html.replace(/^(\s*<br\s*\/?>\s*)+/g, "");
+        html = html.replace(/(\s*<br\s*\/?>\s*)+$/g, "");
+        
+        mesTextEl.innerHTML = html;
 
         // Append rendered hub
         const hubDiv = document.createElement("div");
