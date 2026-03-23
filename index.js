@@ -6,6 +6,38 @@ const kSettingsFile = `${kExtensionFolderPath}/settings.html`;
 const kStorageKeyPrefix = "WL_State_";
 
 // =========================
+// System Prompt (replaces toggl)
+// =========================
+const kSystemPrompt = `Whisperlands RPG: Every response MUST end with ONE <whub> XML block. All fields in roleplay language.
+
+<whub day="(N)" time="(Morning/Day/Evening/Night)" loc="(location)" region="(seal territory or Neutral)">
+<player name="" race="(Human/Beastfolk/Demi-human)" rank="(Civilian/Initiate/Cultist/Disciple)" seal="(seal or None)" sigillati="(god name or —)" />
+<seals>
+<s id="corvus" v="(−10..10)" c="(±N)" label="" />
+<s id="elephas" v="" c="" label="" />
+<s id="scorpius" v="" c="" label="" />
+<s id="serpens" v="" c="" label="" />
+<s id="lophius" v="" c="" label="" />
+<s id="hyaena" v="" c="" label="" />
+</seals>
+<npcs>
+<npc icon="" name="" rel="(−10..10)" rc="(±N)" label="" rom="(true/false)" tags="(1-3 tags)" />
+</npcs>
+<inv>
+<i qty="" name="" type="(quest/seal_token/consumable/weapon)" note="" />
+</inv>
+<currency coin="(number)" unit="(coin name)" goods="(or —)" />
+<quest name="(or None)" goal="" source="" />
+<thk>(Present NPCs/gods private thoughts only)</thk>
+</whub>
+
+Labels: −10..−7 Враг/Ненависть, −6..−4 Враждебность/Неприязнь, −3..−1 Подозрение/Холодность, 0 Безразличие/Незнакомец, 1..3 Интерес/Любопытство, 4..6 Доверие/Интерес, 7..9 Преданность/Близость, 10 Связь
+
+Cross-effects (±2+ trigger): corvus↑: elephas+1 lophius+1 hyaena−1 serpens−1 | elephas↑: corvus+1 hyaena−1 serpens−1 | scorpius↑: serpens+1 lophius−1 elephas−1 | serpens↑: scorpius+1 corvus−1 elephas−1 | lophius↑: corvus+1 scorpius−1 | hyaena↑(+3+): elephas−1 corvus−1
+
+Coins in <currency> ONLY, not <inv>. NPCs: only present in scene. rom=true after romantic interaction. ??? for unknown values until established.`;
+
+// =========================
 // Default State
 // =========================
 const kDefaultState = {
@@ -44,9 +76,6 @@ const kSealConfig = {
     hyaena:   { emoji: "🦴", color: "#fff176", bgFrom: "#302a10", bgTo: "#4a4018", border: "#fdd835" }
 };
 
-// =========================
-// Cross-effects table
-// =========================
 const kCrossEffects = {
     corvus:   { pos: { elephas: 1, lophius: 1 },  neg: { hyaena: -1, serpens: -1 } },
     elephas:  { pos: { corvus: 1 },                neg: { hyaena: -1, serpens: -1 } },
@@ -107,7 +136,6 @@ function ParseWhub(text) {
         region: whubMatch[4]
     };
 
-    // Player
     const playerMatch = text.match(/<player\s+name="(.*?)"\s+race="(.*?)"\s+rank="(.*?)"\s+seal="(.*?)"\s+sigillati="(.*?)"\s*\/>/);
     if (playerMatch) {
         result.player = {
@@ -119,7 +147,6 @@ function ParseWhub(text) {
         };
     }
 
-    // Seals
     result.seals = {};
     const sealRegex = /<s\s+id="(.*?)"\s+v="(.*?)"\s+c="(.*?)"\s+label="(.*?)"\s*\/>/g;
     let sealMatch;
@@ -131,7 +158,6 @@ function ParseWhub(text) {
         };
     }
 
-    // NPCs
     result.npcs = [];
     const npcRegex = /<npc\s+icon="(.*?)"\s+name="(.*?)"\s+rel="(.*?)"\s+rc="(.*?)"\s+label="(.*?)"\s+rom="(.*?)"\s+tags="(.*?)"\s*\/>/g;
     let npcMatch;
@@ -147,7 +173,6 @@ function ParseWhub(text) {
         });
     }
 
-    // Inventory
     result.inventory = [];
     const invRegex = /<i\s+qty="(.*?)"\s+name="(.*?)"\s+type="(.*?)"\s+note="(.*?)"\s*\/>/g;
     let invMatch;
@@ -160,7 +185,6 @@ function ParseWhub(text) {
         });
     }
 
-    // Currency
     const currMatch = text.match(/<currency\s+coin="(.*?)"\s+unit="(.*?)"\s+goods="(.*?)"\s*\/>/);
     if (currMatch) {
         result.currency = {
@@ -170,7 +194,6 @@ function ParseWhub(text) {
         };
     }
 
-    // Quest
     const questMatch = text.match(/<quest\s+name="(.*?)"\s+goal="(.*?)"\s+source="(.*?)"\s*\/>/);
     if (questMatch) {
         result.quest = {
@@ -180,7 +203,6 @@ function ParseWhub(text) {
         };
     }
 
-    // Thoughts
     const thkMatch = text.match(/<thk>([\s\S]*?)<\/thk>/);
     if (thkMatch) {
         result.thoughts = thkMatch[1].trim();
@@ -256,7 +278,7 @@ function UpdateStateFromParsed(parsed) {
 // =========================
 function BuildStateInjection() {
     let lines = [];
-    lines.push("[WHISPERLANDS STATE — ground truth, always trust these values]");
+    lines.push("[WHISPERLANDS STATE — ground truth, always use these values as base]");
     lines.push(`Day: ${gState.day} | Time: ${gState.time} | Location: ${gState.loc} | Region: ${gState.region}`);
     lines.push(`Player: ${gState.player.name} | ${gState.player.race} | ${gState.player.rank} | Seal: ${gState.player.seal} | Sigillati: ${gState.player.sigillati}`);
 
@@ -266,7 +288,7 @@ function BuildStateInjection() {
     }
 
     if (gState.npcs.length > 0) {
-        lines.push("Present NPCs:");
+        lines.push("Known NPCs:");
         for (const npc of gState.npcs) {
             lines.push(`  ${npc.icon} ${npc.name}: rel ${npc.rel}/10 (${npc.label}) rom:${npc.rom} [${npc.tags}]`);
         }
@@ -280,7 +302,7 @@ function BuildStateInjection() {
     }
 
     lines.push(`Currency: ${gState.currency.coin} ${gState.currency.unit} | Goods: ${gState.currency.goods}`);
-    lines.push(`Active Quest: ${gState.quest.name} | Goal: ${gState.quest.goal} | From: ${gState.quest.source}`);
+    lines.push(`Quest: ${gState.quest.name} | Goal: ${gState.quest.goal} | From: ${gState.quest.source}`);
     lines.push("[/WHISPERLANDS STATE]");
 
     return lines.join("\n");
@@ -289,10 +311,6 @@ function BuildStateInjection() {
 // =========================
 // UI Renderer
 // =========================
-function StripWhubFromText(text) {
-    return text.replace(/<whub[\s\S]*?<\/whub>/g, "").trim();
-}
-
 function RenderSealBubble(id, data) {
     const config = kSealConfig[id] || { emoji: "❓", color: "#888", bgFrom: "#222", bgTo: "#333", border: "#555" };
     const val = data.v || 0;
@@ -381,7 +399,7 @@ function RenderFullHub() {
             <div class="wl-header-left">
                 <span>📍 <b>${s.loc}</b></span>
                 <span class="wl-sep">│</span>
-                <span>✦ Day <b>${s.day}</b></span>
+                <span>✦ <b>Day ${s.day}</b></span>
                 <span class="wl-sep">│</span>
                 <span>${s.time}</span>
             </div>
@@ -392,7 +410,7 @@ function RenderFullHub() {
             <div class="wl-player-name">👤 ${s.player.name}</div>
             <div class="wl-player-tags">
                 <span class="wl-tag">${s.player.race}</span>
-                <span class="wl-tag">${s.player.rank}</span>
+                ${s.player.rank !== "???" ? `<span class="wl-tag">${s.player.rank}</span>` : ""}
                 <span class="wl-tag">⚙ ${s.player.seal}</span>
                 ${s.player.sigillati !== "—" && s.player.sigillati !== "No" ?
                     `<span class="wl-tag wl-tag-special">✦ ${s.player.sigillati}</span>` : ""}
@@ -457,19 +475,17 @@ function ProcessMessage(messageDiv, msgIndex) {
         if (existingHub) existingHub.remove();
 
         // Remove XML remnants from DOM
-        // Browser parses <whub>, <seals>, <s>, <npcs>, <npc>, 
-        // <inv>, <i>, <currency>, <quest>, <thk>, <nsfw> as DOM elements
         const xmlTags = [
-            "whub", "player", "seals", "s", "npcs", "npc", 
+            "whub", "player", "seals", "s", "npcs", "npc",
             "inv", "currency", "quest", "thk", "nsfw"
         ];
-        
+
         for (const tag of xmlTags) {
             const elements = mesTextEl.querySelectorAll(tag);
             elements.forEach(el => el.remove());
         }
 
-        // Also remove <i> tags that are inventory items (have qty attribute)
+        // Remove <i> tags that are inventory items (have qty attribute)
         // but keep regular italic <i> tags
         mesTextEl.querySelectorAll("i[qty]").forEach(el => el.remove());
 
@@ -481,7 +497,7 @@ function ProcessMessage(messageDiv, msgIndex) {
         });
 
         // Clean trailing <br> tags
-        while (mesTextEl.lastChild && 
+        while (mesTextEl.lastChild &&
                mesTextEl.lastChild.nodeName === "BR") {
             mesTextEl.lastChild.remove();
         }
@@ -499,7 +515,6 @@ function ProcessMessage(messageDiv, msgIndex) {
 function OnChatChanged() {
     LoadState();
 
-    // Process all existing messages to find latest state
     const stContext = SillyTavern.getContext();
     if (!stContext.chat) return;
 
@@ -512,22 +527,6 @@ function OnChatChanged() {
                 UpdateStateFromParsed(parsed);
             }
         }
-    }
-}
-
-// =========================
-// Prompt Injection via GENERATION_STARTED
-// =========================
-function OnGenerationStarted(data) {
-    // Inject current state into prompt
-    const stateText = BuildStateInjection();
-
-    // We inject as a system message at the start of the context
-    if (data && Array.isArray(data)) {
-        data.push({
-            role: "system",
-            content: stateText
-        });
     }
 }
 
@@ -553,7 +552,33 @@ jQuery(async () => {
     // Load state for current chat
     LoadState();
 
-    // Chat observer — process new messages
+    // Register prompt injection
+    const injectionId = "WL_StateInjection";
+
+    if (stContext.eventTypes.GENERATION_STARTED) {
+        stContext.eventSource.on(stContext.eventTypes.GENERATION_STARTED, () => {
+            const stateText = kSystemPrompt + "\n\n" + BuildStateInjection();
+            stContext.setExtensionPrompt(
+                injectionId,
+                stateText,
+                1,  // position: IN_PROMPT
+                0   // depth: 0 (top of context)
+            );
+        });
+    }
+
+    // Also set it immediately for first generation
+    {
+        const stateText = kSystemPrompt + "\n\n" + BuildStateInjection();
+        stContext.setExtensionPrompt(
+            injectionId,
+            stateText,
+            1,
+            0
+        );
+    }
+
+    // Chat observer
     const chatContainer = document.getElementById("chat");
     if (chatContainer) {
         const observer = new MutationObserver(mutations => {
