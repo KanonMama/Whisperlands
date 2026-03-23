@@ -4,6 +4,7 @@ const kExtensionName = "Whisperlands";
 const kExtensionFolderPath = `scripts/extensions/third-party/${kExtensionName}`;
 const kSettingsFile = `${kExtensionFolderPath}/settings.html`;
 const kStorageKeyPrefix = "WL_State_";
+let gEnabled = false;
 
 // =========================
 // System Prompt (replaces toggl)
@@ -531,6 +532,7 @@ function RenderFullHub() {
 // Message Processing
 // =========================
 function ProcessMessage(messageDiv, msgIndex) {
+    if (!gEnabled) return;
     const stContext = SillyTavern.getContext();
     const msg = stContext.chat[msgIndex];
     if (!msg || msg.is_user) return;
@@ -575,6 +577,8 @@ function ProcessMessage(messageDiv, msgIndex) {
 // =========================
 function OnChatChanged() {
     LoadState();
+    UpdateStatusDisplay();
+    if (!gEnabled) return;
 
     const stContext = SillyTavern.getContext();
     if (!stContext.chat) return;
@@ -591,6 +595,22 @@ function OnChatChanged() {
     }
 }
 
+function UpdateStatusDisplay() {
+    const $status = $("#wl_status");
+    const $summary = $("#wl_state_summary");
+
+    if (gEnabled) {
+        $status.html('<span style="color:#6a8">✦ Extension is active</span>');
+        $summary.html(
+            `Day ${gState.day} | ${gState.time} | ${gState.loc}<br>` +
+            `Player: ${gState.player.name} | ${gState.player.race}<br>` +
+            `Region: ${gState.region}`
+        );
+    } else {
+        $status.html('<span style="color:#888">Extension is inactive</span>');
+        $summary.text("Disabled — not injecting prompts.");
+    }
+}
 // =========================
 // Initialize
 // =========================
@@ -606,9 +626,37 @@ jQuery(async () => {
             $existing.replaceWith(settingsHtml);
         else
             $extensions.append(settingsHtml);
-    } catch (e) {
+        } catch (e) {
         console.warn("[WL] No settings panel found, continuing without.");
     }
+
+    // Toggle handler
+    const savedEnabled = localStorage.getItem("WL_Enabled");
+    gEnabled = savedEnabled === "true";
+
+    const $toggle = $("#wl_enabled");
+    $toggle.prop("checked", gEnabled);
+    UpdateStatusDisplay();
+
+    $toggle.on("change", function() {
+        gEnabled = $(this).is(":checked");
+        localStorage.setItem("WL_Enabled", gEnabled);
+        UpdateStatusDisplay();
+        if (gEnabled) {
+            InjectPrompt();
+        } else {
+            stContext.setExtensionPrompt(injectionId, "", 1, 0);
+        }
+    });
+
+    // Reset button
+    $("#wl_reset_state").on("click", function() {
+        if (confirm("Reset Whisperlands state for this chat?")) {
+            gState = JSON.parse(JSON.stringify(kDefaultState));
+            SaveState();
+            UpdateStatusDisplay();
+        }
+    });
 
     // Load state for current chat
     LoadState();
@@ -616,8 +664,12 @@ jQuery(async () => {
     // Register prompt injection
     const injectionId = "WL_StateInjection";
 
-    function InjectPrompt() {
+        function InjectPrompt() {
         try {
+            if (!gEnabled) {
+                stContext.setExtensionPrompt(injectionId, "", 1, 0);
+                return;
+            }
             const stateText = kSystemPrompt + "\n\n" + BuildStateInjection();
             stContext.setExtensionPrompt(injectionId, stateText, 1, 0);
             console.log("[WL] Prompt injected, length:", stateText.length);
