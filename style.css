@@ -1,0 +1,347 @@
+/* Whisperlands Status Hub */
+
+.wl-hub {
+    background: linear-gradient(135deg, #12161f, #181e2c, #141a26);
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(100,140,200,0.06);
+    border: 1px solid rgba(80,100,150,0.15);
+    font-family: inherit;
+}
+
+.wl-title {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #4a5680;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* Header */
+.wl-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #8898bb;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    background: rgba(20,26,40,0.7);
+    border-radius: 8px;
+    border: 1px solid rgba(80,110,160,0.1);
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.wl-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.wl-header-left b { color: #d0d8f0; }
+
+.wl-header-right { color: #6478a8; }
+
+.wl-sep { color: #3a4560; }
+
+/* Sections */
+.wl-section {
+    background: rgba(16,20,32,0.7);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(60,80,120,0.1);
+}
+
+.wl-section-title {
+    font-weight: 700;
+    font-size: 10px;
+    color: #6878a0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* Player */
+.wl-player-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e0e6fa;
+    margin-bottom: 8px;
+}
+
+.wl-player-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.wl-tag {
+    background: rgba(90,120,190,0.12);
+    color: #a0b4dc;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 10px;
+    border: 1px solid rgba(90,120,190,0.18);
+}
+
+.wl-tag-special {
+    background: rgba(150,130,210,0.15);
+    color: #c0b4e4;
+    border-color: rgba(150,130,210,0.25);
+}
+
+/* Seals Grid */
+.wl-seals-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.wl-seal-bubble {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 80px;
+}
+
+.wl-seal-orb {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid;
+    transition: box-shadow 0.3s;
+}
+
+.wl-seal-val {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.wl-seal-name {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.wl-seal-label {
+    font-size: 9px;
+    color: #6878a0;
+    font-style: italic;
+}
+
+/* NPCs */
+.wl-npc-card {
+    background: rgba(12,16,28,0.6);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border: 1px solid rgba(80,100,150,0.08);
+}
+
+.wl-npc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.wl-npc-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wl-npc-icon { font-size: 16px; }
+
+.wl-npc-name { font-size: 13px; color: #e0e6fa; }
+
+.wl-npc-rom { font-size: 12px; }
+
+.wl-npc-tags {
+    background: rgba(130,150,200,0.1);
+    color: #98a8cc;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 10px;
+    border: 1px solid rgba(130,150,200,0.15);
+}
+
+.wl-npc-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wl-npc-orb {
+    background: linear-gradient(135deg, #2a1a3a, #3a2050);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #b070d0;
+    box-shadow: 0 0 10px rgba(176,112,208,0.2);
+}
+
+.wl-npc-orb span {
+    font-size: 14px;
+    font-weight: 800;
+    color: #e0c0f0;
+}
+
+.wl-npc-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.wl-npc-label {
+    font-size: 11px;
+    color: #c0a8e0;
+    font-weight: 600;
+}
+
+.wl-npc-rc {
+    font-size: 9px;
+    color: #706088;
+}
+
+/* Currency */
+.wl-currency-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wl-coin-orb {
+    background: linear-gradient(135deg, #2a2810, #3a3518);
+    min-width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #d4a840;
+    box-shadow: 0 0 12px rgba(212,168,64,0.2);
+}
+
+.wl-coin-orb span {
+    font-size: 14px;
+    font-weight: 800;
+    color: #f0e0a0;
+}
+
+.wl-currency-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.wl-currency-unit {
+    font-size: 12px;
+    color: #d4c090;
+    font-weight: 600;
+}
+
+.wl-currency-goods {
+    font-size: 10px;
+    color: #8a7a50;
+    font-style: italic;
+}
+
+/* Inventory */
+.wl-inv-item {
+    background: rgba(12,16,26,0.5);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    border: 1px solid rgba(60,80,120,0.08);
+}
+
+.wl-inv-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3px;
+}
+
+.wl-inv-qty {
+    font-size: 12px;
+    font-weight: 700;
+    color: #a0b0d0;
+    margin-right: 6px;
+}
+
+.wl-inv-name {
+    font-size: 12px;
+    color: #dce4ff;
+    flex: 1;
+}
+
+.wl-inv-type {
+    background: rgba(110,140,200,0.12);
+    color: #8098c0;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 9px;
+    border: 1px solid rgba(110,140,200,0.15);
+}
+
+.wl-inv-note {
+    font-size: 10px;
+    color: #586888;
+    font-style: italic;
+}
+
+/* Quest */
+.wl-quest {
+    border-left: 3px solid rgba(160,120,220,0.35);
+}
+
+.wl-quest .wl-section-title { color: #8070a8; }
+
+.wl-quest-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #d4c8f0;
+    margin-bottom: 4px;
+}
+
+.wl-quest-goal {
+    font-size: 11px;
+    color: #a098c0;
+    margin-bottom: 3px;
+}
+
+.wl-quest-source {
+    font-size: 10px;
+    color: #706890;
+    font-style: italic;
+}
+
+/* Thoughts */
+.wl-thoughts {
+    border-left: 3px solid rgba(140,120,200,0.3);
+}
+
+.wl-thoughts .wl-section-title { color: #7868a0; }
+
+.wl-thoughts-text {
+    font-size: 12px;
+    color: #b0b8d8;
+    font-style: italic;
+    line-height: 1.6;
+}
