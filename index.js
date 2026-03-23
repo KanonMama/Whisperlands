@@ -456,21 +456,35 @@ function ProcessMessage(messageDiv, msgIndex) {
         const existingHub = mesTextEl.querySelector(".wl-hub");
         if (existingHub) existingHub.remove();
 
-        // Remove raw XML from display (both encoded and raw)
-        let html = mesTextEl.innerHTML;
+        // Remove XML remnants from DOM
+        // Browser parses <whub>, <seals>, <s>, <npcs>, <npc>, 
+        // <inv>, <i>, <currency>, <quest>, <thk>, <nsfw> as DOM elements
+        const xmlTags = [
+            "whub", "player", "seals", "s", "npcs", "npc", 
+            "inv", "currency", "quest", "thk", "nsfw"
+        ];
         
-        // Encoded version: &lt;whub...&lt;/whub&gt;
-        html = html.replace(/&lt;whub[\s\S]*?&lt;\/whub&gt;/g, "");
-        
-        // Raw version: <whub...</whub>
-        html = html.replace(/<whub[\s\S]*?<\/whub>/g, "");
-        
-        // Clean up leftover empty paragraphs and breaks
-        html = html.replace(/<p>\s*<\/p>/g, "");
-        html = html.replace(/^(\s*<br\s*\/?>\s*)+/g, "");
-        html = html.replace(/(\s*<br\s*\/?>\s*)+$/g, "");
-        
-        mesTextEl.innerHTML = html;
+        for (const tag of xmlTags) {
+            const elements = mesTextEl.querySelectorAll(tag);
+            elements.forEach(el => el.remove());
+        }
+
+        // Also remove <i> tags that are inventory items (have qty attribute)
+        // but keep regular italic <i> tags
+        mesTextEl.querySelectorAll("i[qty]").forEach(el => el.remove());
+
+        // Clean up empty paragraphs left behind
+        mesTextEl.querySelectorAll("p").forEach(p => {
+            if (p.textContent.trim() === "" && !p.querySelector("img")) {
+                p.remove();
+            }
+        });
+
+        // Clean trailing <br> tags
+        while (mesTextEl.lastChild && 
+               mesTextEl.lastChild.nodeName === "BR") {
+            mesTextEl.lastChild.remove();
+        }
 
         // Append rendered hub
         const hubDiv = document.createElement("div");
