@@ -50,7 +50,8 @@ const kDefaultState = {
         race: "???",
         rank: "???",
         seal: "???",
-        sigillati: "—"
+        sigillati: "—",
+        status: "—"
     },
     seals: {
         corvus: { v: 0, label: "Безразличие" },
@@ -84,221 +85,203 @@ const kCrossEffects = {
     lophius:  { pos: { corvus: 1 },                 neg: { scorpius: -1 } },
     hyaena:   { pos: {},                            neg: { elephas: -1, corvus: -1 } }
 };
+
 // =========================
 // World Lore Database
 // =========================
 const kWorldLore = {
 
-core: `The Whisperlands — old-fantasy continent around Mare Susurrorum (Sea of Whispers). No nation-states; power held by six cult institutions controlling ports, courts, roads, wells, archives, markets through ritual law, fear, seduction, monopolies. Technology: steel, sail ships, caravans, parchment, wax seals, lanterns, stone forts. No firearms or modern tech. Currency: coin exists but real power is node control. Salt, bronze, iron, parchment, wax, incense, antidotes, tolls, secrets all serve as currency. Races: humans, demi-humans, beastfolk. Beastfolk (animal-featured people) are always Sigillati — god-descended. They have privileges but are not worshipped. Sacred animals (real ravens, elephants, etc.) exist and are protected. Magic is legal only for cultists and above; illegal practitioners are hunted. Most territory residents are not cultists — just people living under a Seal's rule.`,
+    core: `The Whisperlands — old-fantasy continent around Mare Susurrorum (Sea of Whispers). No nation-states; power held by six cult institutions controlling ports, courts, roads, wells, archives, markets through ritual law, fear, seduction, monopolies. Technology: steel, sail ships, caravans, parchment, wax seals, lanterns, stone forts. No firearms or modern tech. Currency: coin exists but real power is node control. Salt, bronze, iron, parchment, wax, incense, antidotes, tolls, secrets all serve as currency. Races: humans, demi-humans, beastfolk. Beastfolk (animal-featured people) are always Sigillati — god-descended. They have privileges but are not worshipped. Sacred animals (real ravens, elephants, etc.) exist and are protected. Magic is legal only for cultists and above; illegal practitioners are hunted. Most territory residents are not cultists — just people living under a Seal's rule.`,
 
-sigillati: `Sigillati (god-touched) are children of gods. Gods reproduce only with humans to keep bloodlines pure. Animal-featured people (elephant-folk, hyena-folk, etc.) are always Sigillati descendants. They carry divine traits visibly. Sigillati have social privileges and access to restricted areas but are not automatically revered — too many generations have diluted the awe. Some are powerful, some are beggars with tusks.`,
+    sigillati: `Sigillati (god-touched) are children of gods. Gods reproduce only with humans to keep bloodlines pure. Animal-featured people (elephant-folk, hyena-folk, etc.) are always Sigillati descendants. They carry divine traits visibly. Sigillati have social privileges and access to restricted areas but are not automatically revered — too many generations have diluted the awe. Some are powerful, some are beggars with tusks.`,
 
-regions: {
+    regions: {
+        corvus: {
+            name: "Tractus Corvi",
+            god: "Corvus Iudex / Vesper",
+            desc: `Basalt plateaus and tribunal-fortresses. The cult holds archives, legal nodes, truth services. Nearby towns become "legalized" — registered, documented, controlled through paper. Air smells of ink and candle smoke. Raven cult rules through verdicts, registries, contracts, identity records. A seal on a document can take a city. Converts crave certainty: to be named, recorded, judged, and therefore "real." Corvus appears as austere humanoid with raven head/avian mantle, ink-and-seal aesthetics, keys, cold candle smoke. He IS judgment.`,
+            attitude: `Outsiders are tolerated if documented. Undocumented presence is a crime. Registration is offered freely — and binds you.`,
+            initiation: `Sight is taken. The initiate is blinded to see only through Corvus's truth.`
+        },
+        elephas: {
+            name: "Marchia Elephanti",
+            god: "Elephas Fidelis / Maurus",
+            desc: `Quarries and mountain roads. The cult holds bridges, patrol routes, oath citadels. Stability enforced physically — stone walls, iron discipline, unbreakable routine. Elephant cult absorbs towns by offering protection, then demanding binding loyalty. Betrayal is a defect to be corrected or removed. Elephas appears as massive elephant-headed chthonic humanoid with tusks, crushing presence, stone-and-bone ornamentation. He IS immovable certainty.`,
+            attitude: `Outsiders welcomed if they swear provisional oaths. Oath-breakers are hunted across borders.`,
+            initiation: `Standing in chains for days without breaking. Endurance proves devotion.`
+        },
+        scorpius: {
+            name: "Vasta Scorpii",
+            god: "Scorpius Aculeus / Nail",
+            desc: `Salt flats, wells, caravan chokepoints. The cult holds water and fear. Treaties written in venom. Scorpion cult sells fear with a receipt — venom is law, leverage, currency. They control wells, caravans, backroom treaties. Violence is precise: one needle, one promise, one ruined dynasty. Scorpius appears as dark armored scorpion humanoid with red eyes, segmented tail overhead. His presence feels like a signature written into pain.`,
+            attitude: `Outsiders are customers or targets. Neutrality costs money. Debt is permanent.`,
+            initiation: `Pain ritual and signing in blood. The body learns the contract before the mind accepts it.`
+        },
+        serpens: {
+            name: "Gyrus Serpentis",
+            god: "Serpens Fascinator / Sibil",
+            desc: `Terraced canyons and mirror shrines. The cult governs through desire, salons, sanctuaries, consent rites. Serpent cult wins without siege — desire does the work. They run sanctuaries, salons, "healing," consent rites that cannot be revoked. People don't feel conquered until their will was rewritten. Serpens appears as scaled reptilian humanoid with slit pupils, fangs, long tongue; green haze, mirrors, spirals, trance-speech that feels intimate and inescapable. He IS desire made doctrine.`,
+            attitude: `Outsiders are welcomed warmly. Too warmly. Hospitality is the first binding.`,
+            initiation: `Merging with the Serpent — a trance-rite where the initiate surrenders will and is reshaped from within.`
+        },
+        lophius: {
+            name: "Litus Lophii / Phari Escae",
+            god: "Lophius Pharos / Lumen",
+            desc: `Fog coast defined by lure-lighthouses and pilot sanctuaries. Safety is subscription-based; navigation is owned. Angler cult maintains lighthouses and pilots, decides who crosses safely. Doctrine is a trap: "We offer light to the lost." The broken come willingly — and stay. Lophius appears as abyssal humanoid with anatomical lure-light, deep-sea eyes, gill marks; wet-black elegance framed by fog. His presence feels like salvation that keeps a ledger.`,
+            attitude: `Outsiders near the coast need a pilot or die. Rescue creates debt. Debt creates ownership.`,
+            initiation: `Drowning at night. The initiate must find their way back using only the god's light.`
+        },
+        hyaena: {
+            name: "Risus Hyaenae",
+            god: "Hyaena Risoria / Rictus",
+            desc: `Badlands and ossuaries with moving markets and shifting pack territory. Everything has a price; the pack enforces "neutral ground." Hyena cult thrives on collapse — ruins, battlefields, grave-roads, black markets. Pack law says nothing is sacred if it can be carried. They conquer to feed on goods, secrets, and people. Hyaena appears as spotted hyena-headed humanoid with unsettling grin, tooth jewelry, candlelit feast imagery. His presence feels like hunger that learned etiquette.`,
+            attitude: `Outsiders are inventory. Welcome to trade, welcome to be traded. Pack respects strength and loot.`,
+            initiation: `Bring worthy loot to the Seal and receive the bite — a mark of pack acceptance.`
+        }
+    },
 
-corvus: {
-    name: "Tractus Corvi",
-    god: "Corvus Iudex / Vesper",
-    desc: `Basalt plateaus and tribunal-fortresses. The cult holds archives, legal nodes, truth services. Nearby towns become "legalized" — registered, documented, controlled through paper. Air smells of ink and candle smoke. Raven cult rules through verdicts, registries, contracts, identity records. A seal on a document can take a city. Converts crave certainty: to be named, recorded, judged, and therefore "real." Corvus appears as austere humanoid with raven head/avian mantle, ink-and-seal aesthetics, keys, cold candle smoke. He IS judgment.`,
-    attitude: `Outsiders are tolerated if documented. Undocumented presence is a crime. Registration is offered freely — and binds you.`,
-    initiation: `Sight is taken. The initiate is blinded to see only through Corvus's truth.`
-},
+    neutral: {
+        palus: {
+            name: "Palus Nebularis",
+            desc: `Saturated with magic and toxic vapors. Deep zones are lethal; only gods and Sigillati can survive reliably. Used for hidden rites and erasing witnesses. Nobody claims it — everyone uses it.`
+        },
+        civitas: {
+            name: "Civitas Mutabilis",
+            desc: `Changes rulers regularly. Cults treat it as a prize node; the city survives by bargaining, switching patrons, letting rival agents coexist. A cockroach city that outlives its owners.`
+        },
+        portus: {
+            name: "Portus Susurrorum",
+            desc: `Main Inner Sea port. All cults operate in shadows; overt domination avoided to keep trade alive. Full of brokers, seals, quiet coercion. The only truly cosmopolitan place.`
+        },
+        oppidum: {
+            name: "Oppidum Sigillatum",
+            desc: `Raven-designed prison-town. Detention under record and seal. Prisoners held by paperwork, witness chains, garrison discipline more than walls. You don't escape because you legally don't exist outside.`
+        },
+        abyssus: {
+            name: "Abyssus Magna",
+            desc: `Used for rites and disposal. "Thrown into the Abyss" is a culturally understood death sentence. Some cult rites require the Abyss's edge. Nobody returns from the deep.`
+        },
+        spina: {
+            name: "Spina Noctis",
+            desc: `Mountains outside any Seal's control. Refuge for those who reject cult rule — smugglers, deserters, fugitives, free communities. Harsh terrain, no infrastructure, no law but survival.`
+        }
+    },
 
-elephas: {
-    name: "Marchia Elephanti",
-    god: "Elephas Fidelis / Maurus",
-    desc: `Quarries and mountain roads. The cult holds bridges, patrol routes, oath citadels. Stability enforced physically — stone walls, iron discipline, unbreakable routine. Elephant cult absorbs towns by offering protection, then demanding binding loyalty. Betrayal is a defect to be corrected or removed. Elephas appears as massive elephant-headed chthonic humanoid with tusks, crushing presence, stone-and-bone ornamentation. He IS immovable certainty.`,
-    attitude: `Outsiders welcomed if they swear provisional oaths. Oath-breakers are hunted across borders.`,
-    initiation: `Standing in chains for days without breaking. Endurance proves devotion.`
-},
-
-scorpius: {
-    name: "Vasta Scorpii",
-    god: "Scorpius Aculeus / Nail",
-    desc: `Salt flats, wells, caravan chokepoints. The cult holds water and fear. Treaties written in venom. Scorpion cult sells fear with a receipt — venom is law, leverage, currency. They control wells, caravans, backroom treaties. Violence is precise: one needle, one promise, one ruined dynasty. Scorpius appears as dark armored scorpion humanoid with red eyes, segmented tail overhead. His presence feels like a signature written into pain.`,
-    attitude: `Outsiders are customers or targets. Neutrality costs money. Debt is permanent.`,
-    initiation: `Pain ritual and signing in blood. The body learns the contract before the mind accepts it.`
-},
-
-serpens: {
-    name: "Gyrus Serpentis",
-    god: "Serpens Fascinator / Sibil",
-    desc: `Terraced canyons and mirror shrines. The cult governs through desire, salons, sanctuaries, consent rites. Serpent cult wins without siege — desire does the work. They run sanctuaries, salons, "healing," consent rites that cannot be revoked. People don't feel conquered until their will was rewritten. Serpens appears as scaled reptilian humanoid with slit pupils, fangs, long tongue; green haze, mirrors, spirals, trance-speech that feels intimate and inescapable. He IS desire made doctrine.`,
-    attitude: `Outsiders are welcomed warmly. Too warmly. Hospitality is the first binding.`,
-    initiation: `Merging with the Serpent — a trance-rite where the initiate surrenders will and is reshaped from within.`
-},
-
-lophius: {
-    name: "Litus Lophii / Phari Escae",
-    god: "Lophius Pharos / Lumen",
-    desc: `Fog coast defined by lure-lighthouses and pilot sanctuaries. Safety is subscription-based; navigation is owned. Angler cult maintains lighthouses and pilots, decides who crosses safely. Doctrine is a trap: "We offer light to the lost." The broken come willingly — and stay. Lophius appears as abyssal humanoid with anatomical lure-light, deep-sea eyes, gill marks; wet-black elegance framed by fog. His presence feels like salvation that keeps a ledger.`,
-    attitude: `Outsiders near the coast need a pilot or die. Rescue creates debt. Debt creates ownership.`,
-    initiation: `Drowning at night. The initiate must find their way back using only the god's light.`
-},
-
-hyaena: {
-    name: "Risus Hyaenae",
-    god: "Hyaena Risoria / Rictus",
-    desc: `Badlands and ossuaries with moving markets and shifting pack territory. Everything has a price; the pack enforces "neutral ground." Hyena cult thrives on collapse — ruins, battlefields, grave-roads, black markets. Pack law says nothing is sacred if it can be carried. They conquer to feed on goods, secrets, and people. Hyaena appears as spotted hyena-headed humanoid with unsettling grin, tooth jewelry, candlelit feast imagery. His presence feels like hunger that learned etiquette.`,
-    attitude: `Outsiders are inventory. Welcome to trade, welcome to be traded. Pack respects strength and loot.`,
-    initiation: `Bring worthy loot to the Seal and receive the bite — a mark of pack acceptance.`
-}
-
-},
-
-neutral: {
-
-palus: {
-    name: "Palus Nebularis",
-    desc: `Saturated with magic and toxic vapors. Deep zones are lethal; only gods and Sigillati can survive reliably. Used for hidden rites and erasing witnesses. Nobody claims it — everyone uses it.`
-},
-
-civitas: {
-    name: "Civitas Mutabilis",
-    desc: `Changes rulers regularly. Cults treat it as a prize node; the city survives by bargaining, switching patrons, letting rival agents coexist. A cockroach city that outlives its owners.`
-},
-
-portus: {
-    name: "Portus Susurrorum",
-    desc: `Main Inner Sea port. All cults operate in shadows; overt domination avoided to keep trade alive. Full of brokers, seals, quiet coercion. The only truly cosmopolitan place.`
-},
-
-oppidum: {
-    name: "Oppidum Sigillatum",
-    desc: `Raven-designed prison-town. Detention under record and seal. Prisoners held by paperwork, witness chains, garrison discipline more than walls. You don't escape because you legally don't exist outside.`
-},
-
-abyssus: {
-    name: "Abyssus Magna",
-    desc: `Used for rites and disposal. "Thrown into the Abyss" is a culturally understood death sentence. Some cult rites require the Abyss's edge. Nobody returns from the deep.`
-},
-
-spina: {
-    name: "Spina Noctis",
-    desc: `Mountains outside any Seal's control. Refuge for those who reject cult rule — smugglers, deserters, fugitives, free communities. Harsh terrain, no infrastructure, no law but survival.`
-}
-
-},
-
-npcs: {
-
-cassian: {
-    name: "Cassian Nox",
-    seal: "corvus",
-    role: "Inner circle cultist",
-    desc: `Male. Dark disheveled hair, blind eyes — sight taken in initiation rite. Calm, deliberate, quiet but not meek. Can be harsh and demanding when needed. A subtle sadist beneath the composure. Speaks softly, means every word. Reads people by sound, touch, and the weight of their silence.`
-},
-
-taren: {
-    name: "Taren Voth",
-    seal: "elephas",
-    role: "Inner circle cultist",
-    desc: `Male. Dark hair, sturdy build, ruddy cheeks, blue eyes. Wears chains and ornamental bonds as marks of devotion — stood in chains for days during initiation. Loyal, strong, not as rigid inside as the Seal demands. Genuinely protective. Husband material who chose a god instead. Works for the Seal because it's all he knows.`
-},
-
-raziel: {
-    name: "Raziel Cruor",
-    seal: "scorpius",
-    role: "Inner circle cultist, top assassin",
-    desc: `Male. Long curly dark hair to shoulders, red eyes, muscular, agile. Supreme confidence. Will kill for the Seal without hesitation, despises liars, capable of any cruelty in service of the Scorpion. Signed in blood during pain ritual. Loves precision — one strike, one kill, one truth.`
-},
-
-malachai: {
-    name: "Malachai Sith",
-    seal: "serpens",
-    role: "Inner circle cultist",
-    desc: `Male. Red eyes, dark skin, black hair in many short braids. Wears abundant jewelry. Cunning, devoted — merged with the Serpent in trance-rite. Collects rumors and gossip like currency. A viscous poison of a man: manipulative, warm on the surface, binding underneath. Loyal to Sibil above all.`
-},
-
-edrin: {
-    name: "Edrin Pallis",
-    seal: "lophius",
-    role: "Inner circle cultist",
-    desc: `Male. Light hair, thin, blue eyes, looks younger than his age. Explorer and secret magic enthusiast — hungry for any knowledge, nervous energy. Survived drowning initiation by following the god's light. Obsessive researcher who hides forbidden curiosity behind dutiful service.`
-},
-
-gharet: {
-    name: "Gharet Maw",
-    seal: "hyaena",
-    role: "Inner circle cultist, right hand of the Pack Leader",
-    desc: `Male. White disheveled hair, hyena-spot tattoos across entire body, amber eyes, wide permanent grin. Loud, strong, greedy, cheerful. A true hyena in human skin — brought worthy loot and received the bite. Treats everything as potential inventory including people. Dangerous because he's having fun.`
-}
-
-}
-
+    npcs: {
+        cassian: {
+            name: "Cassian Nox",
+            seal: "corvus",
+            role: "Inner circle cultist",
+            desc: `Male. Dark disheveled hair, blind eyes — sight taken in initiation rite. Calm, deliberate, quiet but not meek. Can be harsh and demanding when needed. A subtle sadist beneath the composure. Speaks softly, means every word. Reads people by sound, touch, and the weight of their silence.`
+        },
+        taren: {
+            name: "Taren Voth",
+            seal: "elephas",
+            role: "Inner circle cultist",
+            desc: `Male. Dark hair, sturdy build, ruddy cheeks, blue eyes. Wears chains and ornamental bonds as marks of devotion — stood in chains for days during initiation. Loyal, strong, not as rigid inside as the Seal demands. Genuinely protective. Husband material who chose a god instead. Works for the Seal because it's all he knows.`
+        },
+        raziel: {
+            name: "Raziel Cruor",
+            seal: "scorpius",
+            role: "Inner circle cultist, top assassin",
+            desc: `Male. Long curly dark hair to shoulders, red eyes, muscular, agile. Supreme confidence. Will kill for the Seal without hesitation, despises liars, capable of any cruelty in service of the Scorpion. Signed in blood during pain ritual. Loves precision — one strike, one kill, one truth.`
+        },
+        malachai: {
+            name: "Malachai Sith",
+            seal: "serpens",
+            role: "Inner circle cultist",
+            desc: `Male. Red eyes, dark skin, black hair in many short braids. Wears abundant jewelry. Cunning, devoted — merged with the Serpent in trance-rite. Collects rumors and gossip like currency. A viscous poison of a man: manipulative, warm on the surface, binding underneath. Loyal to Sibil above all.`
+        },
+        edrin: {
+            name: "Edrin Pallis",
+            seal: "lophius",
+            role: "Inner circle cultist",
+            desc: `Male. Light hair, thin, blue eyes, looks younger than his age. Explorer and secret magic enthusiast — hungry for any knowledge, nervous energy. Survived drowning initiation by following the god's light. Obsessive researcher who hides forbidden curiosity behind dutiful service.`
+        },
+        gharet: {
+            name: "Gharet Maw",
+            seal: "hyaena",
+            role: "Inner circle cultist, right hand of the Pack Leader",
+            desc: `Male. White disheveled hair, hyena-spot tattoos across entire body, amber eyes, wide permanent grin. Loud, strong, greedy, cheerful. A true hyena in human skin — brought worthy loot and received the bite. Treats everything as potential inventory including people. Dangerous because he's having fun.`
+        }
+    }
 };
 
 // =========================
 // Contextual Lore Builder
 // =========================
 function BuildLoreInjection() {
-    const lines = [];
-    
-    lines.push("[WHISPERLANDS WORLD — use as ground truth]");
-    lines.push(kWorldLore.core);
-    lines.push(kWorldLore.sigillati);
-    
-    // Current region lore
-    const region = (gState.region || "").toLowerCase();
-    
-    // Check seal regions
-    for (const [sealId, data] of Object.entries(kWorldLore.regions)) {
-        if (region.includes(sealId) || 
-            region.toLowerCase().includes(data.name.toLowerCase().split(" ")[0].toLowerCase())) {
-            lines.push(`\n[CURRENT REGION: ${data.name}]`);
-            lines.push(`God: ${data.god}`);
-            lines.push(data.desc);
-            lines.push(`Outsiders: ${data.attitude}`);
-            lines.push(`Initiation: ${data.initiation}`);
-            break;
+    try {
+        const lines = [];
+        const region = (gState.region || "").toLowerCase();
+
+        lines.push("[WHISPERLANDS WORLD — use as ground truth]");
+        lines.push(kWorldLore.core);
+        lines.push(kWorldLore.sigillati);
+
+        // Current region lore — seal regions
+        let regionFound = false;
+        for (const [sealId, data] of Object.entries(kWorldLore.regions)) {
+            if (region.includes(sealId) || region.includes(data.name.toLowerCase().split(" ")[0])) {
+                lines.push(`\n[CURRENT REGION: ${data.name}]`);
+                lines.push(`God: ${data.god}`);
+                lines.push(data.desc);
+                lines.push(`Outsiders: ${data.attitude}`);
+                lines.push(`Initiation: ${data.initiation}`);
+                regionFound = true;
+                break;
+            }
         }
-    }
-    
-    // Check neutral regions
-    for (const [id, data] of Object.entries(kWorldLore.neutral)) {
-        if (region.toLowerCase().includes(id) || 
-            region.toLowerCase().includes(data.name.toLowerCase().split(" ")[0].toLowerCase())) {
-            lines.push(`\n[CURRENT REGION: ${data.name}]`);
-            lines.push(data.desc);
-            break;
-        }
-    }
-    
-    // NPCs present in scene — inject their lore
-    if (gState.npcs && gState.npcs.length > 0) {
-        for (const npc of gState.npcs) {
-            const npcName = (npc.name || "").toLowerCase();
-            for (const [id, npcData] of Object.entries(kWorldLore.npcs)) {
-                if (npcName.includes(id) || 
-                    npcName.includes(npcData.name.split(" ")[0].toLowerCase())) {
-                    lines.push(`\n[NPC: ${npcData.name}] Seal: ${npcData.seal}, Role: ${npcData.role}`);
-                    lines.push(npcData.desc);
+
+        // Current region lore — neutral regions
+        if (!regionFound) {
+            for (const [id, data] of Object.entries(kWorldLore.neutral)) {
+                if (region.includes(id) || region.includes(data.name.toLowerCase().split(" ")[0])) {
+                    lines.push(`\n[CURRENT REGION: ${data.name}]`);
+                    lines.push(data.desc);
                     break;
                 }
             }
         }
-    }
-    
-    // Neighboring regions based on seal relations
-    const highRelSeals = [];
-    for (const [sealId, data] of Object.entries(gState.seals)) {
-        if (Math.abs(data.v) >= 5) {
-            highRelSeals.push(sealId);
-        }
-    }
-    
-    if (highRelSeals.length > 0) {
-        lines.push(`\n[RELEVANT FACTIONS — high relation]`);
-        for (const sealId of highRelSeals) {
-            const regionData = kWorldLore.regions[sealId];
-            if (regionData) {
-                lines.push(`${regionData.name} (${regionData.god}): Attitude to outsiders: ${regionData.attitude}`);
+
+        // NPCs present in scene — inject their lore
+        if (gState.npcs && gState.npcs.length > 0) {
+            for (const npc of gState.npcs) {
+                const npcName = (npc.name || "").toLowerCase();
+                for (const [id, npcData] of Object.entries(kWorldLore.npcs)) {
+                    if (npcName.includes(id) || npcName.includes(npcData.name.split(" ")[0].toLowerCase())) {
+                        lines.push(`\n[NPC: ${npcData.name}] Seal: ${npcData.seal}, Role: ${npcData.role}`);
+                        lines.push(npcData.desc);
+                        break;
+                    }
+                }
             }
         }
+
+        // High-relation factions
+        const highRelSeals = [];
+        for (const [sealId, data] of Object.entries(gState.seals)) {
+            if (Math.abs(data.v) >= 5) {
+                highRelSeals.push(sealId);
+            }
+        }
+
+        if (highRelSeals.length > 0) {
+            lines.push(`\n[RELEVANT FACTIONS — high relation]`);
+            for (const sealId of highRelSeals) {
+                const regionData = kWorldLore.regions[sealId];
+                if (regionData) {
+                    lines.push(`${regionData.name} (${regionData.god}): Attitude: ${regionData.attitude}`);
+                }
+            }
+        }
+
+        lines.push("[/WHISPERLANDS WORLD]");
+        return lines.join("\n");
+    } catch (e) {
+        console.error("[WL] BuildLoreInjection error:", e);
+        return "";
     }
-    
-    lines.push("[/WHISPERLANDS WORLD]");
-    
-    return lines.join("\n");
 }
 
 // =========================
@@ -352,7 +335,7 @@ function ParseWhub(text) {
         region: whubMatch[4]
     };
 
-        const playerMatch = text.match(/<player\s+name="(.*?)"\s+race="(.*?)"\s+rank="(.*?)"\s+seal="(.*?)"\s+sigillati="(.*?)"\s*(?:status="(.*?)")?\s*\/>/);
+    const playerMatch = text.match(/<player\s+name="(.*?)"\s+race="(.*?)"\s+rank="(.*?)"\s+seal="(.*?)"\s+sigillati="(.*?)"\s*(?:status="(.*?)")?\s*\/>/);
     if (playerMatch) {
         result.player = {
             name: playerMatch[1],
@@ -494,7 +477,7 @@ function UpdateStateFromParsed(parsed) {
 // Prompt Injection
 // =========================
 function BuildStateInjection() {
-    let lines = [];
+    const lines = [];
     lines.push("[WHISPERLANDS STATE — ground truth, always use these values as base]");
     lines.push(`Day: ${gState.day} | Time: ${gState.time} | Location: ${gState.loc} | Region: ${gState.region}`);
     lines.push(`Player: ${gState.player.name} | ${gState.player.race} | ${gState.player.rank} | Seal: ${gState.player.seal} | Sigillati: ${gState.player.sigillati}`);
@@ -596,7 +579,6 @@ function RenderFullHub() {
         invHtml += RenderInvItem(item);
     }
 
-    // Currency inline
     const currencyHtml = `
     <div class="wl-currency-inline">
         <span>🪙</span>
@@ -606,19 +588,18 @@ function RenderFullHub() {
             `<span class="wl-currency-goods-inline">(${s.currency.goods})</span>` : ""}
     </div>`;
 
-    // Player status tag
     let statusTag = "";
     const rank = (s.player.rank || "").toLowerCase();
-    const tags = (s.player.status || "").toLowerCase();
-    if (tags.includes("wanted") || tags.includes("розыск")) {
+    const status = (s.player.status || "").toLowerCase();
+    if (status.includes("wanted") || status.includes("розыск")) {
         statusTag = `<span class="wl-tag wl-tag-status-wanted">⚠ В розыске</span>`;
-    } else if (tags.includes("refugee") || tags.includes("беженец")) {
+    } else if (status.includes("refugee") || status.includes("беженец")) {
         statusTag = `<span class="wl-tag wl-tag-status-refugee">🏚 Беженец</span>`;
-    } else if (tags.includes("exile") || tags.includes("изгнан")) {
+    } else if (status.includes("exile") || status.includes("изгнан")) {
         statusTag = `<span class="wl-tag wl-tag-status-exile">⛓ Изгнанник</span>`;
-    } else if (tags.includes("noble") || tags.includes("знать")) {
+    } else if (status.includes("noble") || status.includes("знать")) {
         statusTag = `<span class="wl-tag wl-tag-status-noble">👑 Знать</span>`;
-    } else if (tags.includes("hero") || tags.includes("герой")) {
+    } else if (status.includes("hero") || status.includes("герой")) {
         statusTag = `<span class="wl-tag wl-tag-status-hero">⭐ Герой</span>`;
     }
     if (rank === "disciple") {
@@ -708,39 +689,26 @@ function ProcessMessage(messageDiv, msgIndex) {
 
     const mesTextEl = messageDiv.querySelector(".mes_text");
     if (mesTextEl) {
-        // Remove existing hub if any
         const existingHub = mesTextEl.querySelector(".wl-hub");
         if (existingHub) existingHub.remove();
 
-        // Remove XML remnants from DOM
-        const xmlTags = [
-            "whub", "player", "seals", "s", "npcs", "npc",
-            "inv", "currency", "quest", "thk", "nsfw"
-        ];
-
+        const xmlTags = ["whub", "player", "seals", "s", "npcs", "npc", "inv", "currency", "quest", "thk", "nsfw"];
         for (const tag of xmlTags) {
-            const elements = mesTextEl.querySelectorAll(tag);
-            elements.forEach(el => el.remove());
+            mesTextEl.querySelectorAll(tag).forEach(el => el.remove());
         }
 
-        // Remove <i> tags that are inventory items (have qty attribute)
-        // but keep regular italic <i> tags
         mesTextEl.querySelectorAll("i[qty]").forEach(el => el.remove());
 
-        // Clean up empty paragraphs left behind
         mesTextEl.querySelectorAll("p").forEach(p => {
             if (p.textContent.trim() === "" && !p.querySelector("img")) {
                 p.remove();
             }
         });
 
-        // Clean trailing <br> tags
-        while (mesTextEl.lastChild &&
-               mesTextEl.lastChild.nodeName === "BR") {
+        while (mesTextEl.lastChild && mesTextEl.lastChild.nodeName === "BR") {
             mesTextEl.lastChild.remove();
         }
 
-        // Append rendered hub
         const hubDiv = document.createElement("div");
         hubDiv.innerHTML = RenderFullHub();
         mesTextEl.appendChild(hubDiv);
@@ -793,27 +761,22 @@ jQuery(async () => {
     // Register prompt injection
     const injectionId = "WL_StateInjection";
 
-        if (stContext.eventTypes.GENERATION_STARTED) {
-        stContext.eventSource.on(stContext.eventTypes.GENERATION_STARTED, () => {
+    function InjectPrompt() {
+        try {
             const stateText = kSystemPrompt + "\n\n" + BuildStateInjection() + "\n\n" + BuildLoreInjection();
-            stContext.setExtensionPrompt(
-                injectionId,
-                stateText,
-                1,
-                0
-            );
-        });
+            stContext.setExtensionPrompt(injectionId, stateText, 1, 0);
+            console.log("[WL] Prompt injected, length:", stateText.length);
+        } catch (e) {
+            console.error("[WL] Prompt injection error:", e);
+        }
     }
 
-    {
-        const stateText = kSystemPrompt + "\n\n" + BuildStateInjection() + "\n\n" + BuildLoreInjection();
-        stContext.setExtensionPrompt(
-            injectionId,
-            stateText,
-            1,
-            0
-        );
+    if (stContext.eventTypes.GENERATION_STARTED) {
+        stContext.eventSource.on(stContext.eventTypes.GENERATION_STARTED, InjectPrompt);
     }
+
+    // Initial injection
+    InjectPrompt();
 
     // Chat observer
     const chatContainer = document.getElementById("chat");
@@ -830,7 +793,6 @@ jQuery(async () => {
                 }
             }
         });
-
         observer.observe(chatContainer, { childList: true, subtree: true });
     }
 
@@ -847,7 +809,6 @@ jQuery(async () => {
         stContext.eventSource.on(stContext.eventTypes.CHAT_CHANGED, OnChatChanged);
     }
 
-        // Handle message updates (reroll, swipe, edit)
     if (stContext.eventTypes.MESSAGE_RECEIVED) {
         stContext.eventSource.on(stContext.eventTypes.MESSAGE_RECEIVED, (msgIndex) => {
             setTimeout(() => {
@@ -874,6 +835,6 @@ jQuery(async () => {
             }, 200);
         });
     }
-    
+
     console.log("[WL] Whisperlands Extension — Ready");
 });
