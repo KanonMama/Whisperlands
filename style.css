@@ -27,7 +27,7 @@
     font-size: 12px;
     color: #8898bb;
     padding: 8px 12px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     background: rgba(20,26,40,0.7);
     border-radius: 8px;
     border: 1px solid rgba(80,110,160,0.1);
@@ -43,9 +43,7 @@
 }
 
 .wl-header-left b { color: #d0d8f0; }
-
 .wl-header-right { color: #6478a8; }
-
 .wl-sep { color: #3a4560; }
 
 /* Sections */
@@ -53,7 +51,7 @@
     background: rgba(16,20,32,0.7);
     border-radius: 8px;
     padding: 10px 14px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     border: 1px solid rgba(60,80,120,0.1);
 }
 
@@ -63,27 +61,42 @@
     color: #6878a0;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 /* Player */
+.wl-player {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 14px;
+}
+
+.wl-player-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .wl-player-name {
     font-size: 14px;
     font-weight: 700;
     color: #e0e6fa;
-    margin-bottom: 8px;
 }
 
 .wl-player-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 5px;
 }
 
 .wl-tag {
     background: rgba(90,120,190,0.12);
     color: #a0b4dc;
-    padding: 4px 12px;
+    padding: 3px 10px;
     border-radius: 999px;
     font-size: 10px;
     border: 1px solid rgba(90,120,190,0.18);
@@ -93,6 +106,77 @@
     background: rgba(150,130,210,0.15);
     color: #c0b4e4;
     border-color: rgba(150,130,210,0.25);
+}
+
+.wl-tag-status-wanted {
+    background: rgba(220,60,60,0.15);
+    color: #ff6b6b;
+    border-color: rgba(220,60,60,0.3);
+    animation: wl-pulse-red 2s ease-in-out infinite;
+}
+
+.wl-tag-status-refugee {
+    background: rgba(200,160,60,0.15);
+    color: #f0c050;
+    border-color: rgba(200,160,60,0.3);
+}
+
+.wl-tag-status-noble {
+    background: rgba(160,130,220,0.2);
+    color: #d0b8ff;
+    border-color: rgba(160,130,220,0.35);
+}
+
+.wl-tag-status-hero {
+    background: rgba(80,180,220,0.15);
+    color: #70d8f8;
+    border-color: rgba(80,180,220,0.3);
+    animation: wl-pulse-blue 2s ease-in-out infinite;
+}
+
+.wl-tag-status-exile {
+    background: rgba(100,100,100,0.2);
+    color: #a0a0a0;
+    border-color: rgba(100,100,100,0.3);
+}
+
+@keyframes wl-pulse-red {
+    0%, 100% { box-shadow: 0 0 4px rgba(220,60,60,0.2); }
+    50% { box-shadow: 0 0 10px rgba(220,60,60,0.4); }
+}
+
+@keyframes wl-pulse-blue {
+    0%, 100% { box-shadow: 0 0 4px rgba(80,180,220,0.2); }
+    50% { box-shadow: 0 0 10px rgba(80,180,220,0.4); }
+}
+
+/* Currency — compact inline */
+.wl-currency-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: rgba(60,50,20,0.3);
+    border: 1px solid rgba(212,168,64,0.25);
+    border-radius: 999px;
+}
+
+.wl-currency-coin {
+    font-size: 11px;
+    font-weight: 800;
+    color: #f0e0a0;
+}
+
+.wl-currency-unit {
+    font-size: 10px;
+    color: #d4c090;
+}
+
+.wl-currency-goods-inline {
+    font-size: 9px;
+    color: #8a7a50;
+    font-style: italic;
+    margin-left: 4px;
 }
 
 /* Seals Grid */
@@ -108,12 +192,12 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    min-width: 80px;
+    min-width: 72px;
 }
 
 .wl-seal-orb {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -123,187 +207,181 @@
 }
 
 .wl-seal-val {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 800;
 }
 
 .wl-seal-name {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
 
 .wl-seal-label {
-    font-size: 9px;
+    font-size: 8px;
     color: #6878a0;
     font-style: italic;
 }
 
-/* NPCs */
+/* NPCs — compact */
 .wl-npc-card {
-    background: rgba(12,16,28,0.6);
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 6px;
-    border: 1px solid rgba(80,100,150,0.08);
-}
-
-.wl-npc-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    background: rgba(12,16,28,0.4);
+    border-radius: 6px;
+    border: 1px solid rgba(80,100,150,0.06);
+    gap: 8px;
     flex-wrap: wrap;
-    gap: 6px;
 }
 
-.wl-npc-name-row {
+.wl-npc-left {
     display: flex;
     align-items: center;
-    gap: 6px;
-}
-
-.wl-npc-icon { font-size: 16px; }
-
-.wl-npc-name { font-size: 13px; color: #e0e6fa; }
-
-.wl-npc-rom { font-size: 12px; }
-
-.wl-npc-tags {
-    background: rgba(130,150,200,0.1);
-    color: #98a8cc;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 10px;
-    border: 1px solid rgba(130,150,200,0.15);
-}
-
-.wl-npc-stats {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .wl-npc-orb {
     background: linear-gradient(135deg, #2a1a3a, #3a2050);
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid #b070d0;
-    box-shadow: 0 0 10px rgba(176,112,208,0.2);
+    box-shadow: 0 0 8px rgba(176,112,208,0.15);
+    flex-shrink: 0;
 }
 
 .wl-npc-orb span {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 800;
     color: #e0c0f0;
 }
 
-.wl-npc-info {
+.wl-npc-name-col {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
+.wl-npc-name-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.wl-npc-icon { font-size: 14px; }
+.wl-npc-name { font-size: 12px; color: #e0e6fa; font-weight: 600; }
+.wl-npc-rom { font-size: 11px; }
+
 .wl-npc-label {
-    font-size: 11px;
-    color: #c0a8e0;
-    font-weight: 600;
+    font-size: 10px;
+    color: #a090c0;
 }
 
 .wl-npc-rc {
     font-size: 9px;
     color: #706088;
+    margin-left: 4px;
 }
 
-/* Currency */
-.wl-currency-row {
+.wl-npc-right {
     display: flex;
     align-items: center;
-    gap: 12px;
 }
 
-.wl-coin-orb {
-    background: linear-gradient(135deg, #2a2810, #3a3518);
-    min-width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #d4a840;
-    box-shadow: 0 0 12px rgba(212,168,64,0.2);
+.wl-npc-tags {
+    background: rgba(130,150,200,0.08);
+    color: #8098b8;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 9px;
+    border: 1px solid rgba(130,150,200,0.1);
 }
 
-.wl-coin-orb span {
-    font-size: 14px;
-    font-weight: 800;
-    color: #f0e0a0;
+/* Inventory — bag style, 2 columns */
+.wl-inv-bag {
+    background: rgba(16,20,32,0.7);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border: 1px solid rgba(139,119,80,0.2);
+    background-image: linear-gradient(135deg, rgba(139,119,80,0.05) 0%, transparent 50%);
 }
 
-.wl-currency-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.wl-currency-unit {
-    font-size: 12px;
-    color: #d4c090;
-    font-weight: 600;
-}
-
-.wl-currency-goods {
+.wl-inv-title {
+    font-weight: 700;
     font-size: 10px;
-    color: #8a7a50;
-    font-style: italic;
+    color: #a08860;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
 }
 
-/* Inventory */
+.wl-inv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+
 .wl-inv-item {
-    background: rgba(12,16,26,0.5);
-    border-radius: 6px;
-    padding: 8px 12px;
-    margin-bottom: 4px;
-    border: 1px solid rgba(60,80,120,0.08);
-}
-
-.wl-inv-main {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 3px;
+    gap: 6px;
+    padding: 4px 8px;
+    background: rgba(139,119,80,0.06);
+    border-radius: 5px;
+    border: 1px solid rgba(139,119,80,0.1);
 }
 
 .wl-inv-qty {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 700;
-    color: #a0b0d0;
-    margin-right: 6px;
+    color: #c0a870;
+    flex-shrink: 0;
+}
+
+.wl-inv-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
 }
 
 .wl-inv-name {
-    font-size: 12px;
+    font-size: 11px;
     color: #dce4ff;
-    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wl-inv-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .wl-inv-type {
-    background: rgba(110,140,200,0.12);
-    color: #8098c0;
-    padding: 2px 8px;
+    background: rgba(139,119,80,0.15);
+    color: #a09070;
+    padding: 1px 6px;
     border-radius: 999px;
-    font-size: 9px;
-    border: 1px solid rgba(110,140,200,0.15);
+    font-size: 8px;
+    border: 1px solid rgba(139,119,80,0.2);
 }
 
 .wl-inv-note {
-    font-size: 10px;
-    color: #586888;
+    font-size: 8px;
+    color: #706850;
     font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Quest */
