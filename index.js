@@ -610,5 +610,33 @@ jQuery(async () => {
         stContext.eventSource.on(stContext.eventTypes.CHAT_CHANGED, OnChatChanged);
     }
 
+        // Handle message updates (reroll, swipe, edit)
+    if (stContext.eventTypes.MESSAGE_RECEIVED) {
+        stContext.eventSource.on(stContext.eventTypes.MESSAGE_RECEIVED, (msgIndex) => {
+            setTimeout(() => {
+                const msgDiv = document.querySelector(`.mes[mesid="${msgIndex}"]`);
+                if (msgDiv) ProcessMessage(msgDiv, msgIndex);
+            }, 200);
+        });
+    }
+
+    if (stContext.eventTypes.MESSAGE_EDITED) {
+        stContext.eventSource.on(stContext.eventTypes.MESSAGE_EDITED, (msgIndex) => {
+            setTimeout(() => {
+                const msgDiv = document.querySelector(`.mes[mesid="${msgIndex}"]`);
+                if (msgDiv) ProcessMessage(msgDiv, msgIndex);
+            }, 200);
+        });
+    }
+
+    if (stContext.eventTypes.MESSAGE_SWIPED) {
+        stContext.eventSource.on(stContext.eventTypes.MESSAGE_SWIPED, (msgIndex) => {
+            setTimeout(() => {
+                const msgDiv = document.querySelector(`.mes[mesid="${msgIndex}"]`);
+                if (msgDiv) ProcessMessage(msgDiv, msgIndex);
+            }, 200);
+        });
+    }
+    
     console.log("[WL] Whisperlands Extension — Ready");
 });
