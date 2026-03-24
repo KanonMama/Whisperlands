@@ -4,7 +4,13 @@ const kExtensionName = "Whisperlands";
 const kExtensionFolderPath = `scripts/extensions/third-party/${kExtensionName}`;
 const kSettingsFile = `${kExtensionFolderPath}/settings.html`;
 const kStorageKeyPrefix = "WL_State_";
+
+const kThemeStorageKey = "WL_Theme";
+const kEnabledStorageKey = "WL_Enabled";
+const kThemeClasses = ["wl-theme-midnight", "wl-theme-seafoam", "wl-theme-rose", "wl-theme-amber"];
+
 let gEnabled = false;
+let gTheme = "midnight";
 
 // =========================
 // System Prompt
@@ -90,6 +96,14 @@ const kCrossEffects = {
 };
 
 // =========================
+// Theme
+// =========================
+function ApplyThemeClass() {
+    document.body.classList.remove(...kThemeClasses);
+    document.body.classList.add(`wl-theme-${gTheme}`);
+}
+
+// =========================
 // State Management
 // =========================
 let gState = JSON.parse(JSON.stringify(kDefaultState));
@@ -114,7 +128,6 @@ function LoadState() {
         if (stored) {
             gState = JSON.parse(stored);
 
-            // На случай старого сохранения
             if (!gState.currency || typeof gState.currency !== "object") {
                 gState.currency = { copper: 0, silver: 0, gold: 0, goods: "—" };
             } else {
@@ -203,7 +216,6 @@ function ParseWhub(text) {
         });
     }
 
-    // Новый формат валюты
     const currMatchNew = text.match(/<currency\s+copper="(.*?)"\s+silver="(.*?)"\s+gold="(.*?)"\s+goods="(.*?)"\s*\/>/);
     if (currMatchNew) {
         result.currency = {
@@ -213,7 +225,6 @@ function ParseWhub(text) {
             goods: currMatchNew[4]
         };
     } else {
-        // Старый формат для совместимости
         const currMatchOld = text.match(/<currency\s+coin="(.*?)"\s+unit="(.*?)"\s+goods="(.*?)"\s*\/>/);
         if (currMatchOld) {
             const amount = parseInt(currMatchOld[1]) || 0;
@@ -601,7 +612,8 @@ function UpdateStatusDisplay() {
         $summary.html(
             `Day ${gState.day} | ${gState.time} | ${gState.loc}<br>` +
             `Player: ${gState.player.name} | ${gState.player.race}<br>` +
-            `Region: ${gState.region}`
+            `Region: ${gState.region}<br>` +
+            `Theme: ${gTheme}`
         );
     } else {
         $status.html('<span style="color:#888">Extension is inactive</span>');
@@ -630,7 +642,6 @@ jQuery(async () => {
         }
     }
 
-    // Load settings HTML
     try {
         const settingsHtml = await $.get(kSettingsFile);
         const $extensions = $("#extensions_settings");
@@ -643,21 +654,30 @@ jQuery(async () => {
         console.warn("[WL] No settings panel found, continuing without.");
     }
 
-    // Toggle handler
-    const savedEnabled = localStorage.getItem("WL_Enabled");
+    const savedEnabled = localStorage.getItem(kEnabledStorageKey);
     gEnabled = savedEnabled === "true";
+
+    const savedTheme = localStorage.getItem(kThemeStorageKey);
+    if (savedTheme && ["midnight", "seafoam", "rose", "amber"].includes(savedTheme)) {
+        gTheme = savedTheme;
+    }
+
+    ApplyThemeClass();
 
     const $toggle = $("#wl_enabled");
     $toggle.prop("checked", gEnabled);
 
-    // Load state for current chat
+    const $theme = $("#wl_theme");
+    $theme.val(gTheme);
+
     LoadState();
     UpdateStatusDisplay();
 
     $toggle.on("change", function () {
         gEnabled = $(this).is(":checked");
-        localStorage.setItem("WL_Enabled", String(gEnabled));
+        localStorage.setItem(kEnabledStorageKey, String(gEnabled));
         UpdateStatusDisplay();
+
         if (gEnabled) {
             InjectPrompt();
         } else {
@@ -665,7 +685,13 @@ jQuery(async () => {
         }
     });
 
-    // Reset button
+    $theme.on("change", function () {
+        gTheme = $(this).val() || "midnight";
+        localStorage.setItem(kThemeStorageKey, gTheme);
+        ApplyThemeClass();
+        UpdateStatusDisplay();
+    });
+
     $("#wl_reset_state").on("click", function () {
         if (confirm("Reset Whisperlands state for this chat?")) {
             gState = JSON.parse(JSON.stringify(kDefaultState));
@@ -674,15 +700,12 @@ jQuery(async () => {
         }
     });
 
-    // Register generation hook
     if (stContext.eventTypes.GENERATION_STARTED) {
         stContext.eventSource.on(stContext.eventTypes.GENERATION_STARTED, InjectPrompt);
     }
 
-    // Initial injection
     InjectPrompt();
 
-    // Chat observer
     const chatContainer = document.getElementById("chat");
     if (chatContainer) {
         const observer = new MutationObserver(mutations => {
@@ -700,7 +723,6 @@ jQuery(async () => {
         observer.observe(chatContainer, { childList: true, subtree: true });
     }
 
-    // Process existing messages on load
     document.querySelectorAll(".mes").forEach(node => {
         const msgId = Number(node.getAttribute("mesid"));
         if (!isNaN(msgId)) {
@@ -708,7 +730,6 @@ jQuery(async () => {
         }
     });
 
-    // Register events
     if (stContext.eventTypes.CHAT_CHANGED) {
         stContext.eventSource.on(stContext.eventTypes.CHAT_CHANGED, OnChatChanged);
     }
