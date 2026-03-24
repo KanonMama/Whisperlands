@@ -27,7 +27,7 @@ const kSystemPrompt = `Whisperlands RPG: Every response MUST end with ONE <whub>
 <inv>
 <i qty="" name="" type="(quest/seal_token/consumable/weapon)" note="" />
 </inv>
-<currency coin="(number)" unit="(coin name)" goods="(or —)" />
+<currency copper="(number)" silver="(number)" gold="(number)" goods="(or —)" />
 <quest name="(or None)" goal="" source="" />
 <thk>(Present NPCs/gods private thoughts only)</thk>
 </whub>
@@ -36,7 +36,7 @@ Labels: −10..−7 Враг/Ненависть, −6..−4 Враждебнос
 
 Cross-effects (±2+ trigger): corvus↑: elephas+1 lophius+1 hyaena−1 serpens−1 | elephas↑: corvus+1 hyaena−1 serpens−1 | scorpius↑: serpens+1 lophius−1 elephas−1 | serpens↑: scorpius+1 corvus−1 elephas−1 | lophius↑: corvus+1 scorpius−1 | hyaena↑(+3+): elephas−1 corvus−1
 
-Coins in <currency> ONLY, not <inv>. NPCs: only present in scene. rom=true after romantic interaction. ??? for unknown values until established.
+Coins in <currency> ONLY, not <inv>. Use ONLY these currency fields: copper, silver, gold. Do not invent other coin names or currencies. NPCs: only present in scene. rom=true after romantic interaction. ??? for unknown values until established.
 
 STRICT: The [WHISPERLANDS WORLD] block is absolute canon. Do NOT invent new gods, rename existing gods, change their gender, or contradict any world data provided. Build on it, never replace it.`;
 
@@ -66,7 +66,7 @@ const kDefaultState = {
     },
     npcs: [],
     inventory: [],
-    currency: { coin: 0, unit: "—", goods: "—" },
+    currency: { copper: 0, silver: 0, gold: 0, goods: "—" },
     quest: { name: "None", goal: "—", source: "—" },
     thoughts: ""
 };
@@ -83,10 +83,10 @@ const kSealConfig = {
 const kCrossEffects = {
     corvus:   { pos: { elephas: 1, lophius: 1 },  neg: { hyaena: -1, serpens: -1 } },
     elephas:  { pos: { corvus: 1 },                neg: { hyaena: -1, serpens: -1 } },
-    scorpius: { pos: { serpens: 1 },                neg: { lophius: -1, elephas: -1 } },
-    serpens:  { pos: { scorpius: 1 },               neg: { corvus: -1, elephas: -1 } },
-    lophius:  { pos: { corvus: 1 },                 neg: { scorpius: -1 } },
-    hyaena:   { pos: {},                            neg: { elephas: -1, corvus: -1 } }
+    scorpius: { pos: { serpens: 1 },               neg: { lophius: -1, elephas: -1 } },
+    serpens:  { pos: { scorpius: 1 },              neg: { corvus: -1, elephas: -1 } },
+    lophius:  { pos: { corvus: 1 },                neg: { scorpius: -1 } },
+    hyaena:   { pos: {},                           neg: { elephas: -1, corvus: -1 } }
 };
 
 // =========================
@@ -113,6 +113,19 @@ function LoadState() {
         const stored = localStorage.getItem(GetStorageKey());
         if (stored) {
             gState = JSON.parse(stored);
+
+            // На случай старого сохранения
+            if (!gState.currency || typeof gState.currency !== "object") {
+                gState.currency = { copper: 0, silver: 0, gold: 0, goods: "—" };
+            } else {
+                gState.currency = {
+                    copper: parseInt(gState.currency.copper) || 0,
+                    silver: parseInt(gState.currency.silver) || 0,
+                    gold: parseInt(gState.currency.gold) || 0,
+                    goods: gState.currency.goods || "—"
+                };
+            }
+
             return true;
         }
     } catch (e) {
@@ -190,13 +203,29 @@ function ParseWhub(text) {
         });
     }
 
-    const currMatch = text.match(/<currency\s+coin="(.*?)"\s+unit="(.*?)"\s+goods="(.*?)"\s*\/>/);
-    if (currMatch) {
+    // Новый формат валюты
+    const currMatchNew = text.match(/<currency\s+copper="(.*?)"\s+silver="(.*?)"\s+gold="(.*?)"\s+goods="(.*?)"\s*\/>/);
+    if (currMatchNew) {
         result.currency = {
-            coin: currMatch[1],
-            unit: currMatch[2],
-            goods: currMatch[3]
+            copper: parseInt(currMatchNew[1]) || 0,
+            silver: parseInt(currMatchNew[2]) || 0,
+            gold: parseInt(currMatchNew[3]) || 0,
+            goods: currMatchNew[4]
         };
+    } else {
+        // Старый формат для совместимости
+        const currMatchOld = text.match(/<currency\s+coin="(.*?)"\s+unit="(.*?)"\s+goods="(.*?)"\s*\/>/);
+        if (currMatchOld) {
+            const amount = parseInt(currMatchOld[1]) || 0;
+            const unit = (currMatchOld[2] || "").toLowerCase();
+
+            result.currency = {
+                copper: unit.includes("мед") || unit.includes("copper") ? amount : 0,
+                silver: unit.includes("сер") || unit.includes("silver") ? amount : 0,
+                gold: unit.includes("зол") || unit.includes("gold") ? amount : 0,
+                goods: currMatchOld[3]
+            };
+        }
     }
 
     const questMatch = text.match(/<quest\s+name="(.*?)"\s+goal="(.*?)"\s+source="(.*?)"\s*\/>/);
@@ -271,9 +300,18 @@ function UpdateStateFromParsed(parsed) {
 
     if (parsed.npcs) gState.npcs = parsed.npcs;
     if (parsed.inventory) gState.inventory = parsed.inventory;
-    if (parsed.currency) gState.currency = parsed.currency;
+
+    if (parsed.currency) {
+        gState.currency = {
+            copper: parseInt(parsed.currency.copper) || 0,
+            silver: parseInt(parsed.currency.silver) || 0,
+            gold: parseInt(parsed.currency.gold) || 0,
+            goods: parsed.currency.goods || "—"
+        };
+    }
+
     if (parsed.quest) gState.quest = parsed.quest;
-    if (parsed.thoughts) gState.thoughts = parsed.thoughts;
+    if (parsed.thoughts !== undefined) gState.thoughts = parsed.thoughts;
 
     SaveState();
 }
@@ -306,7 +344,7 @@ function BuildStateInjection() {
         }
     }
 
-    lines.push(`Currency: ${gState.currency.coin} ${gState.currency.unit} | Goods: ${gState.currency.goods}`);
+    lines.push(`Currency: ${gState.currency.gold} gold | ${gState.currency.silver} silver | ${gState.currency.copper} copper | Goods: ${gState.currency.goods}`);
     lines.push(`Quest: ${gState.quest.name} | Goal: ${gState.quest.goal} | From: ${gState.quest.source}`);
     lines.push("[/WHISPERLANDS STATE]");
 
@@ -360,9 +398,23 @@ function RenderInvItem(item) {
             <span class="wl-inv-name">${item.name}</span>
             <div class="wl-inv-meta">
                 <span class="wl-inv-type">${item.type}</span>
-                <span class="wl-inv-note">${item.note}</span>
+                ${item.note && item.note !== "—" ? `<span class="wl-inv-note">${item.note}</span>` : ""}
             </div>
         </div>
+    </div>`;
+}
+
+function RenderCurrency(currency) {
+    const c = currency || { copper: 0, silver: 0, gold: 0, goods: "—" };
+
+    return `
+    <div class="wl-currency-inline">
+        <span class="wl-currency-pack">
+            <span class="wl-currency-chip wl-gold">🟡 ${c.gold || 0} з</span>
+            <span class="wl-currency-chip wl-silver">⚪ ${c.silver || 0} с</span>
+            <span class="wl-currency-chip wl-copper">🟠 ${c.copper || 0} м</span>
+        </span>
+        ${c.goods !== "—" && c.goods !== "None" ? `<span class="wl-currency-goods-inline">${c.goods}</span>` : ""}
     </div>`;
 }
 
@@ -384,18 +436,12 @@ function RenderFullHub() {
         invHtml += RenderInvItem(item);
     }
 
-    const currencyHtml = `
-    <div class="wl-currency-inline">
-        <span>🪙</span>
-        <span class="wl-currency-coin">${s.currency.coin}</span>
-        <span class="wl-currency-unit">${s.currency.unit}</span>
-        ${s.currency.goods !== "—" && s.currency.goods !== "None" ?
-            `<span class="wl-currency-goods-inline">(${s.currency.goods})</span>` : ""}
-    </div>`;
+    const currencyHtml = RenderCurrency(s.currency);
 
     let statusTag = "";
     const rank = (s.player.rank || "").toLowerCase();
     const status = (s.player.status || "").toLowerCase();
+
     if (status.includes("wanted") || status.includes("розыск")) {
         statusTag = `<span class="wl-tag wl-tag-status-wanted">⚠ В розыске</span>`;
     } else if (status.includes("refugee") || status.includes("беженец")) {
@@ -407,6 +453,7 @@ function RenderFullHub() {
     } else if (status.includes("hero") || status.includes("герой")) {
         statusTag = `<span class="wl-tag wl-tag-status-hero">⭐ Герой</span>`;
     }
+
     if (rank === "disciple") {
         statusTag += `<span class="wl-tag wl-tag-status-noble">🔮 Ученик</span>`;
     }
@@ -435,8 +482,6 @@ function RenderFullHub() {
                 <span>✦ <b>Day ${s.day}</b></span>
                 <span class="wl-sep">│</span>
                 <span>${s.time}</span>
-                <span class="wl-sep">│</span>
-                ${currencyHtml}
             </div>
             <div class="wl-header-right">⚑ ${s.region}</div>
         </div>
@@ -466,10 +511,13 @@ function RenderFullHub() {
             ${npcsHtml}
         </div>` : ""}
 
-        ${invHtml ? `
+        ${(invHtml || currencyHtml) ? `
         <div class="wl-inv-bag">
-            <div class="wl-inv-title">🎒 INVENTORY</div>
-            <div class="wl-inv-grid">${invHtml}</div>
+            <div class="wl-inv-title-row">
+                <div class="wl-inv-title">🎒 INVENTORY</div>
+                ${currencyHtml}
+            </div>
+            ${invHtml ? `<div class="wl-inv-grid">${invHtml}</div>` : ""}
         </div>` : ""}
 
         ${questHtml}
@@ -601,6 +649,9 @@ jQuery(async () => {
 
     const $toggle = $("#wl_enabled");
     $toggle.prop("checked", gEnabled);
+
+    // Load state for current chat
+    LoadState();
     UpdateStatusDisplay();
 
     $toggle.on("change", function () {
@@ -622,9 +673,6 @@ jQuery(async () => {
             UpdateStatusDisplay();
         }
     });
-
-    // Load state for current chat
-    LoadState();
 
     // Register generation hook
     if (stContext.eventTypes.GENERATION_STARTED) {
