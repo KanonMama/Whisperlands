@@ -9,13 +9,26 @@
                 <input type="checkbox" id="wl_enabled" />
                 <label for="wl_enabled"><b>Enable Whisperlands</b></label>
             </div>
+
+            <div style="margin-bottom:12px;">
+                <label for="wl_theme" style="display:block;font-size:12px;margin-bottom:4px;"><b>Theme</b></label>
+                <select id="wl_theme" style="width:100%;max-width:260px;">
+                    <option value="midnight">Midnight Blue</option>
+                    <option value="seafoam">Seafoam Fantasy</option>
+                    <option value="rose">Rose Violet</option>
+                    <option value="amber">Amber Night</option>
+                </select>
+            </div>
+
             <div id="wl_status" style="font-size:12px;color:#888;margin-bottom:8px;">
                 Extension is inactive.
             </div>
+
             <div id="wl_state_display" style="font-size:11px;color:#666;margin-bottom:8px;">
                 <b>Current State:</b>
                 <div id="wl_state_summary" style="margin-top:4px;color:#999;">No state loaded.</div>
             </div>
+
             <div class="menu_button" id="wl_reset_state" style="font-size:12px;">
                 🗑 Reset State
             </div>
