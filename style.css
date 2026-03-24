@@ -150,35 +150,6 @@
     50% { box-shadow: 0 0 10px rgba(80,180,220,0.4); }
 }
 
-/* Currency — compact inline */
-.wl-currency-inline {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 10px;
-    background: rgba(60,50,20,0.3);
-    border: 1px solid rgba(212,168,64,0.25);
-    border-radius: 999px;
-}
-
-.wl-currency-coin {
-    font-size: 11px;
-    font-weight: 800;
-    color: #f0e0a0;
-}
-
-.wl-currency-unit {
-    font-size: 10px;
-    color: #d4c090;
-}
-
-.wl-currency-goods-inline {
-    font-size: 9px;
-    color: #8a7a50;
-    font-style: italic;
-    margin-left: 4px;
-}
-
 /* Seals Grid */
 .wl-seals-grid {
     display: flex;
@@ -303,7 +274,7 @@
     border: 1px solid rgba(130,150,200,0.1);
 }
 
-/* Inventory — bag style, 2 columns */
+/* Inventory — bag style, 3 columns compact */
 .wl-inv-bag {
     background: rgba(16,20,32,0.7);
     border-radius: 10px;
@@ -313,29 +284,40 @@
     background-image: linear-gradient(135deg, rgba(139,119,80,0.05) 0%, transparent 50%);
 }
 
+.wl-inv-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
 .wl-inv-title {
     font-weight: 700;
     font-size: 10px;
     color: #a08860;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 0;
 }
 
 .wl-inv-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
 }
 
 .wl-inv-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 6px;
-    padding: 4px 8px;
+    padding: 5px 7px;
     background: rgba(139,119,80,0.06);
-    border-radius: 5px;
+    border-radius: 6px;
     border: 1px solid rgba(139,119,80,0.1);
+    min-width: 0;
+    min-height: 52px;
 }
 
 .wl-inv-qty {
@@ -343,27 +325,30 @@
     font-weight: 700;
     color: #c0a870;
     flex-shrink: 0;
+    min-width: 18px;
 }
 
 .wl-inv-info {
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 2px;
     min-width: 0;
+    flex: 1;
 }
 
 .wl-inv-name {
     font-size: 11px;
     color: #dce4ff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .wl-inv-meta {
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-wrap: wrap;
 }
 
 .wl-inv-type {
@@ -373,15 +358,67 @@
     border-radius: 999px;
     font-size: 8px;
     border: 1px solid rgba(139,119,80,0.2);
+    flex-shrink: 0;
 }
 
 .wl-inv-note {
     font-size: 8px;
     color: #706850;
     font-style: italic;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* Currency inside inventory header */
+.wl-currency-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.wl-currency-pack {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.wl-currency-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.wl-gold {
+    background: rgba(212,168,64,0.14);
+    color: #f0d27a;
+    border-color: rgba(212,168,64,0.28);
+}
+
+.wl-silver {
+    background: rgba(170,180,200,0.12);
+    color: #d6deef;
+    border-color: rgba(170,180,200,0.22);
+}
+
+.wl-copper {
+    background: rgba(176,110,70,0.14);
+    color: #d8a080;
+    border-color: rgba(176,110,70,0.24);
+}
+
+.wl-currency-goods-inline {
+    font-size: 9px;
+    color: #8a7a50;
+    font-style: italic;
 }
 
 /* Quest */
@@ -422,4 +459,25 @@
     color: #b0b8d8;
     font-style: italic;
     line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .wl-inv-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .wl-inv-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wl-inv-title-row {
+        align-items: flex-start;
+    }
+
+    .wl-currency-inline {
+        justify-content: flex-start;
+    }
 }
