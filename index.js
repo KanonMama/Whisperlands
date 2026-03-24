@@ -7,15 +7,166 @@ const kStorageKeyPrefix = "WL_State_";
 
 const kThemeStorageKey = "WL_Theme";
 const kEnabledStorageKey = "WL_Enabled";
+const kLanguageStorageKey = "WL_Language";
+
 const kThemeClasses = ["wl-theme-midnight", "wl-theme-seafoam", "wl-theme-rose", "wl-theme-amber"];
 
 let gEnabled = false;
 let gTheme = "midnight";
+let gLanguageMode = "auto"; // auto | ru | en
 
 // =========================
-// System Prompt
+// Localization
 // =========================
-const kSystemPrompt = `Whisperlands RPG: Every response MUST end with ONE <whub> XML block. All fields in roleplay language.
+const kI18n = {
+    en: {
+        extensionActive: "✦ Extension is active",
+        extensionInactive: "Extension is inactive",
+        disabledSummary: "Disabled — not injecting prompts.",
+        resetConfirm: "Reset Whisperlands state for this chat?",
+        currentStateTheme: "Theme",
+        currentStateLanguage: "Language",
+
+        titleInventory: "🎒 INVENTORY",
+        titleSealRelations: "⚖ SEAL RELATIONS",
+        titlePresent: "❤ PRESENT",
+        titleActiveQuest: "📜 ACTIVE QUEST",
+        titleInnerThoughts: "💭 INNER THOUGHTS",
+
+        wanted: "⚠ Wanted",
+        refugee: "🏚 Refugee",
+        exile: "⛓ Exile",
+        noble: "👑 Noble",
+        hero: "⭐ Hero",
+        disciple: "🔮 Disciple",
+
+        from: "From",
+        day: "Day",
+
+        relation_enemy: "Enemy",
+        relation_hostile: "Hostile",
+        relation_suspicious: "Suspicious",
+        relation_neutral: "Neutral",
+        relation_curious: "Curious",
+        relation_trust: "Trust",
+        relation_devoted: "Devoted",
+        relation_bond: "Bond",
+
+        auto: "Auto",
+        english: "English",
+        russian: "Russian"
+    },
+    ru: {
+        extensionActive: "✦ Расширение активно",
+        extensionInactive: "Расширение выключено",
+        disabledSummary: "Отключено — промпт не внедряется.",
+        resetConfirm: "Сбросить состояние Whisperlands для этого чата?",
+        currentStateTheme: "Тема",
+        currentStateLanguage: "Язык",
+
+        titleInventory: "🎒 ИНВЕНТАРЬ",
+        titleSealRelations: "⚖ ОТНОШЕНИЯ С ПЕЧАТЯМИ",
+        titlePresent: "❤ РЯДОМ",
+        titleActiveQuest: "📜 АКТИВНЫЙ КВЕСТ",
+        titleInnerThoughts: "💭 ВНУТРЕННИЕ МЫСЛИ",
+
+        wanted: "⚠ В розыске",
+        refugee: "🏚 Беженец",
+        exile: "⛓ Изгнанник",
+        noble: "👑 Знать",
+        hero: "⭐ Герой",
+        disciple: "🔮 Ученик",
+
+        from: "От",
+        day: "День",
+
+        relation_enemy: "Враг",
+        relation_hostile: "Враждебность",
+        relation_suspicious: "Подозрение",
+        relation_neutral: "Безразличие",
+        relation_curious: "Интерес",
+        relation_trust: "Доверие",
+        relation_devoted: "Преданность",
+        relation_bond: "Связь",
+
+        auto: "Авто",
+        english: "Английский",
+        russian: "Русский"
+    }
+};
+
+function DetectLanguageFromChat() {
+    try {
+        const stContext = SillyTavern.getContext();
+        const chat = stContext.chat || [];
+        const recentMessages = chat.slice(-8).map(m => m?.mes || "").join(" ");
+
+        if (!recentMessages.trim()) return "en";
+
+        const cyrillicMatches = recentMessages.match(/[А-Яа-яЁё]/g) || [];
+        const latinMatches = recentMessages.match(/[A-Za-z]/g) || [];
+
+        if (cyrillicMatches.length > latinMatches.length * 0.3) {
+            return "ru";
+        }
+
+        return "en";
+    } catch {
+        return "en";
+    }
+}
+
+function GetCurrentLanguage() {
+    if (gLanguageMode === "ru" || gLanguageMode === "en") {
+        return gLanguageMode;
+    }
+    return DetectLanguageFromChat();
+}
+
+function T(key) {
+    const lang = GetCurrentLanguage();
+    return kI18n[lang]?.[key] || kI18n.en[key] || key;
+}
+
+function GetReadableThemeName(theme) {
+    switch (theme) {
+        case "midnight": return "Midnight Blue";
+        case "seafoam": return "Seafoam Fantasy";
+        case "rose": return "Rose Violet";
+        case "amber": return "Amber Night";
+        default: return "Midnight Blue";
+    }
+}
+
+function GetReadableLanguageMode(mode) {
+    if (mode === "ru") return T("russian");
+    if (mode === "en") return T("english");
+    return T("auto");
+}
+
+function GetRelationLabel(value) {
+    const v = parseInt(value) || 0;
+    if (v <= -7) return T("relation_enemy");
+    if (v <= -4) return T("relation_hostile");
+    if (v <= -1) return T("relation_suspicious");
+    if (v === 0) return T("relation_neutral");
+    if (v <= 3) return T("relation_curious");
+    if (v <= 6) return T("relation_trust");
+    if (v <= 9) return T("relation_devoted");
+    return T("relation_bond");
+}
+
+function BuildSystemPrompt() {
+    const lang = GetCurrentLanguage();
+
+    const labelGuideRu = `Labels: −10..−7 Враг/Ненависть, −6..−4 Враждебность/Неприязнь, −3..−1 Подозрение/Холодность, 0 Безразличие/Незнакомец, 1..3 Интерес/Любопытство, 4..6 Доверие/Интерес, 7..9 Преданность/Близость, 10 Связь`;
+    const labelGuideEn = `Labels: −10..−7 Enemy/Hatred, −6..−4 Hostility/Dislike, −3..−1 Suspicion/Coldness, 0 Neutral/Stranger, 1..3 Interest/Curiosity, 4..6 Trust/Interest, 7..9 Devotion/Closeness, 10 Bond`;
+
+    const languageRule = lang === "ru"
+        ? `All visible text in the XML should match the current roleplay language. For this chat, use Russian for labels, quest text, thoughts, item notes, goods, and similar visible content whenever known.`
+        : `All visible text in the XML should match the current roleplay language. For this chat, use English for labels, quest text, thoughts, item notes, goods, and similar visible content whenever known.`;
+
+    return `Whisperlands RPG: Every response MUST end with ONE <whub> XML block. All fields in roleplay language.
 
 <whub day="(N)" time="(Morning/Day/Evening/Night)" loc="(location)" region="(seal territory or Neutral)">
 <player name="" race="(Human/Beastfolk/Demi-human)" rank="(Civilian/Initiate/Cultist/Disciple)" seal="(seal or None)" sigillati="(god name or —)" status="(wanted/refugee/exile/noble/hero or —)" />
@@ -38,13 +189,16 @@ const kSystemPrompt = `Whisperlands RPG: Every response MUST end with ONE <whub>
 <thk>(Present NPCs/gods private thoughts only)</thk>
 </whub>
 
-Labels: −10..−7 Враг/Ненависть, −6..−4 Враждебность/Неприязнь, −3..−1 Подозрение/Холодность, 0 Безразличие/Незнакомец, 1..3 Интерес/Любопытство, 4..6 Доверие/Интерес, 7..9 Преданность/Близость, 10 Связь
+${lang === "ru" ? labelGuideRu : labelGuideEn}
 
 Cross-effects (±2+ trigger): corvus↑: elephas+1 lophius+1 hyaena−1 serpens−1 | elephas↑: corvus+1 hyaena−1 serpens−1 | scorpius↑: serpens+1 lophius−1 elephas−1 | serpens↑: scorpius+1 corvus−1 elephas−1 | lophius↑: corvus+1 scorpius−1 | hyaena↑(+3+): elephas−1 corvus−1
 
 Coins in <currency> ONLY, not <inv>. Use ONLY these currency fields: copper, silver, gold. Do not invent other coin names or currencies. NPCs: only present in scene. rom=true after romantic interaction. ??? for unknown values until established.
 
+${languageRule}
+
 STRICT: The [WHISPERLANDS WORLD] block is absolute canon. Do NOT invent new gods, rename existing gods, change their gender, or contradict any world data provided. Build on it, never replace it.`;
+}
 
 // =========================
 // Default State
@@ -63,12 +217,12 @@ const kDefaultState = {
         status: "—"
     },
     seals: {
-        corvus: { v: 0, label: "Безразличие" },
-        elephas: { v: 0, label: "Безразличие" },
-        scorpius: { v: 0, label: "Безразличие" },
-        serpens: { v: 0, label: "Безразличие" },
-        lophius: { v: 0, label: "Безразличие" },
-        hyaena: { v: 0, label: "Безразличие" }
+        corvus: { v: 0, label: "Neutral" },
+        elephas: { v: 0, label: "Neutral" },
+        scorpius: { v: 0, label: "Neutral" },
+        serpens: { v: 0, label: "Neutral" },
+        lophius: { v: 0, label: "Neutral" },
+        hyaena: { v: 0, label: "Neutral" }
     },
     npcs: [],
     inventory: [],
@@ -304,7 +458,7 @@ function UpdateStateFromParsed(parsed) {
         for (const [id, data] of Object.entries(parsed.seals)) {
             gState.seals[id] = {
                 v: Clamp(data.v, -10, 10),
-                label: data.label || gState.seals[id]?.label || "Безразличие"
+                label: data.label || gState.seals[id]?.label || "Neutral"
             };
         }
     }
@@ -338,13 +492,13 @@ function BuildStateInjection() {
 
     lines.push("Seal Relations:");
     for (const [id, data] of Object.entries(gState.seals)) {
-        lines.push(`  ${id}: ${data.v}/10 (${data.label})`);
+        lines.push(`  ${id}: ${data.v}/10 (${GetRelationLabel(data.v)})`);
     }
 
     if (gState.npcs.length > 0) {
         lines.push("Known NPCs:");
         for (const npc of gState.npcs) {
-            lines.push(`  ${npc.icon} ${npc.name}: rel ${npc.rel}/10 (${npc.label}) rom:${npc.rom} [${npc.tags}]`);
+            lines.push(`  ${npc.icon} ${npc.name}: rel ${npc.rel}/10 (${GetRelationLabel(npc.rel)}) rom:${npc.rom} [${npc.tags}]`);
         }
     }
 
@@ -368,6 +522,7 @@ function BuildStateInjection() {
 function RenderSealBubble(id, data) {
     const config = kSealConfig[id] || { emoji: "❓", color: "#888", bgFrom: "#222", bgTo: "#333", border: "#555" };
     const val = data.v || 0;
+    const label = GetRelationLabel(val);
 
     return `
     <div class="wl-seal-bubble">
@@ -375,11 +530,13 @@ function RenderSealBubble(id, data) {
             <span class="wl-seal-val" style="color:${config.color}">${val}</span>
         </div>
         <div class="wl-seal-name" style="color:${config.color}">${config.emoji} ${id.charAt(0).toUpperCase() + id.slice(1)}</div>
-        <div class="wl-seal-label">${data.label || ""}</div>
+        <div class="wl-seal-label">${label}</div>
     </div>`;
 }
 
 function RenderNpc(npc) {
+    const label = npc.label && npc.label !== "—" ? npc.label : GetRelationLabel(npc.rel);
+
     return `
     <div class="wl-npc-card">
         <div class="wl-npc-left">
@@ -392,7 +549,7 @@ function RenderNpc(npc) {
                     <b class="wl-npc-name">${npc.name}</b>
                     ${npc.rom ? '<span class="wl-npc-rom">💜</span>' : ""}
                 </div>
-                <span class="wl-npc-label">${npc.label}<span class="wl-npc-rc"> ${npc.rc >= 0 ? "+" : ""}${npc.rc}</span></span>
+                <span class="wl-npc-label">${label}<span class="wl-npc-rc"> ${npc.rc >= 0 ? "+" : ""}${npc.rc}</span></span>
             </div>
         </div>
         <div class="wl-npc-right">
@@ -434,7 +591,7 @@ function RenderFullHub() {
 
     let sealsHtml = "";
     for (const id of ["corvus", "elephas", "scorpius", "serpens", "lophius", "hyaena"]) {
-        sealsHtml += RenderSealBubble(id, s.seals[id] || { v: 0, label: "Безразличие" });
+        sealsHtml += RenderSealBubble(id, s.seals[id] || { v: 0, label: "Neutral" });
     }
 
     let npcsHtml = "";
@@ -454,32 +611,32 @@ function RenderFullHub() {
     const status = (s.player.status || "").toLowerCase();
 
     if (status.includes("wanted") || status.includes("розыск")) {
-        statusTag = `<span class="wl-tag wl-tag-status-wanted">⚠ В розыске</span>`;
+        statusTag = `<span class="wl-tag wl-tag-status-wanted">${T("wanted")}</span>`;
     } else if (status.includes("refugee") || status.includes("беженец")) {
-        statusTag = `<span class="wl-tag wl-tag-status-refugee">🏚 Беженец</span>`;
+        statusTag = `<span class="wl-tag wl-tag-status-refugee">${T("refugee")}</span>`;
     } else if (status.includes("exile") || status.includes("изгнан")) {
-        statusTag = `<span class="wl-tag wl-tag-status-exile">⛓ Изгнанник</span>`;
+        statusTag = `<span class="wl-tag wl-tag-status-exile">${T("exile")}</span>`;
     } else if (status.includes("noble") || status.includes("знать")) {
-        statusTag = `<span class="wl-tag wl-tag-status-noble">👑 Знать</span>`;
+        statusTag = `<span class="wl-tag wl-tag-status-noble">${T("noble")}</span>`;
     } else if (status.includes("hero") || status.includes("герой")) {
-        statusTag = `<span class="wl-tag wl-tag-status-hero">⭐ Герой</span>`;
+        statusTag = `<span class="wl-tag wl-tag-status-hero">${T("hero")}</span>`;
     }
 
-    if (rank === "disciple") {
-        statusTag += `<span class="wl-tag wl-tag-status-noble">🔮 Ученик</span>`;
+    if (rank === "disciple" || rank === "ученик") {
+        statusTag += `<span class="wl-tag wl-tag-status-noble">${T("disciple")}</span>`;
     }
 
     const questHtml = s.quest.name === "None" ? "" : `
     <div class="wl-section wl-quest">
-        <div class="wl-section-title">📜 ACTIVE QUEST</div>
+        <div class="wl-section-title">${T("titleActiveQuest")}</div>
         <div class="wl-quest-name">${s.quest.name}</div>
         <div class="wl-quest-goal">🎯 ${s.quest.goal}</div>
-        <div class="wl-quest-source">From: ${s.quest.source}</div>
+        <div class="wl-quest-source">${T("from")}: ${s.quest.source}</div>
     </div>`;
 
     const thoughtsHtml = s.thoughts ? `
     <div class="wl-section wl-thoughts">
-        <div class="wl-section-title">💭 INNER THOUGHTS</div>
+        <div class="wl-section-title">${T("titleInnerThoughts")}</div>
         <div class="wl-thoughts-text">${s.thoughts}</div>
     </div>` : "";
 
@@ -490,7 +647,7 @@ function RenderFullHub() {
             <div class="wl-header-left">
                 <span>📍 <b>${s.loc}</b></span>
                 <span class="wl-sep">│</span>
-                <span>✦ <b>Day ${s.day}</b></span>
+                <span>✦ <b>${T("day")} ${s.day}</b></span>
                 <span class="wl-sep">│</span>
                 <span>${s.time}</span>
             </div>
@@ -512,20 +669,20 @@ function RenderFullHub() {
         </div>
 
         <div class="wl-section">
-            <div class="wl-section-title">⚖ SEAL RELATIONS</div>
+            <div class="wl-section-title">${T("titleSealRelations")}</div>
             <div class="wl-seals-grid">${sealsHtml}</div>
         </div>
 
         ${npcsHtml ? `
         <div class="wl-section">
-            <div class="wl-section-title">❤ PRESENT</div>
+            <div class="wl-section-title">${T("titlePresent")}</div>
             ${npcsHtml}
         </div>` : ""}
 
         ${(invHtml || currencyHtml) ? `
         <div class="wl-inv-bag">
             <div class="wl-inv-title-row">
-                <div class="wl-inv-title">🎒 INVENTORY</div>
+                <div class="wl-inv-title">${T("titleInventory")}</div>
                 ${currencyHtml}
             </div>
             ${invHtml ? `<div class="wl-inv-grid">${invHtml}</div>` : ""}
@@ -580,6 +737,15 @@ function ProcessMessage(messageDiv, msgIndex) {
     }
 }
 
+function RefreshAllVisibleHubs() {
+    document.querySelectorAll(".mes").forEach(node => {
+        const msgId = Number(node.getAttribute("mesid"));
+        if (!isNaN(msgId)) {
+            ProcessMessage(node, msgId);
+        }
+    });
+}
+
 // =========================
 // Event Handlers
 // =========================
@@ -601,6 +767,8 @@ function OnChatChanged() {
             }
         }
     }
+
+    RefreshAllVisibleHubs();
 }
 
 function UpdateStatusDisplay() {
@@ -608,16 +776,17 @@ function UpdateStatusDisplay() {
     const $summary = $("#wl_state_summary");
 
     if (gEnabled) {
-        $status.html('<span style="color:#6a8">✦ Extension is active</span>');
+        $status.html(`<span style="color:#6a8">${T("extensionActive")}</span>`);
         $summary.html(
-            `Day ${gState.day} | ${gState.time} | ${gState.loc}<br>` +
+            `${T("day")} ${gState.day} | ${gState.time} | ${gState.loc}<br>` +
             `Player: ${gState.player.name} | ${gState.player.race}<br>` +
             `Region: ${gState.region}<br>` +
-            `Theme: ${gTheme}`
+            `${T("currentStateTheme")}: ${GetReadableThemeName(gTheme)}<br>` +
+            `${T("currentStateLanguage")}: ${GetReadableLanguageMode(gLanguageMode)}`
         );
     } else {
-        $status.html('<span style="color:#888">Extension is inactive</span>');
-        $summary.text("Disabled — not injecting prompts.");
+        $status.html(`<span style="color:#888">${T("extensionInactive")}</span>`);
+        $summary.text(T("disabledSummary"));
     }
 }
 
@@ -634,7 +803,7 @@ jQuery(async () => {
                 stContext.setExtensionPrompt(injectionId, "", 1, 0);
                 return;
             }
-            const stateText = kSystemPrompt + "\n\n" + BuildStateInjection();
+            const stateText = BuildSystemPrompt() + "\n\n" + BuildStateInjection();
             stContext.setExtensionPrompt(injectionId, stateText, 1, 0);
             console.log("[WL] Prompt injected, length:", stateText.length);
         } catch (e) {
@@ -662,6 +831,11 @@ jQuery(async () => {
         gTheme = savedTheme;
     }
 
+    const savedLanguage = localStorage.getItem(kLanguageStorageKey);
+    if (savedLanguage && ["auto", "ru", "en"].includes(savedLanguage)) {
+        gLanguageMode = savedLanguage;
+    }
+
     ApplyThemeClass();
 
     const $toggle = $("#wl_enabled");
@@ -669,6 +843,9 @@ jQuery(async () => {
 
     const $theme = $("#wl_theme");
     $theme.val(gTheme);
+
+    const $language = $("#wl_language");
+    $language.val(gLanguageMode);
 
     LoadState();
     UpdateStatusDisplay();
@@ -680,6 +857,7 @@ jQuery(async () => {
 
         if (gEnabled) {
             InjectPrompt();
+            RefreshAllVisibleHubs();
         } else {
             stContext.setExtensionPrompt(injectionId, "", 1, 0);
         }
@@ -692,11 +870,20 @@ jQuery(async () => {
         UpdateStatusDisplay();
     });
 
+    $language.on("change", function () {
+        gLanguageMode = $(this).val() || "auto";
+        localStorage.setItem(kLanguageStorageKey, gLanguageMode);
+        UpdateStatusDisplay();
+        InjectPrompt();
+        RefreshAllVisibleHubs();
+    });
+
     $("#wl_reset_state").on("click", function () {
-        if (confirm("Reset Whisperlands state for this chat?")) {
+        if (confirm(T("resetConfirm"))) {
             gState = JSON.parse(JSON.stringify(kDefaultState));
             SaveState();
             UpdateStatusDisplay();
+            RefreshAllVisibleHubs();
         }
     });
 
