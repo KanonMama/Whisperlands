@@ -1,20 +1,345 @@
 /* Whisperlands Status Hub */
 
+/* =========================
+   Theme Variables
+========================= */
+
+body.wl-theme-midnight {
+    --wl-bg-main: linear-gradient(135deg, #12161f, #181e2c, #141a26);
+    --wl-panel: rgba(16,20,32,0.74);
+    --wl-panel-2: rgba(20,26,40,0.72);
+    --wl-border: rgba(80,100,150,0.15);
+    --wl-border-soft: rgba(60,80,120,0.10);
+    --wl-title: #4a5680;
+    --wl-text-main: #e0e6fa;
+    --wl-text-soft: #8898bb;
+    --wl-text-dim: #6878a0;
+    --wl-text-faint: #6478a8;
+    --wl-sep: #3a4560;
+
+    --wl-tag-bg: rgba(90,120,190,0.12);
+    --wl-tag-text: #a0b4dc;
+    --wl-tag-border: rgba(90,120,190,0.18);
+
+    --wl-tag-special-bg: rgba(150,130,210,0.15);
+    --wl-tag-special-text: #c0b4e4;
+    --wl-tag-special-border: rgba(150,130,210,0.25);
+
+    --wl-inv-accent: #a08860;
+    --wl-inv-bg: rgba(139,119,80,0.06);
+    --wl-inv-border: rgba(139,119,80,0.20);
+    --wl-inv-item-border: rgba(139,119,80,0.10);
+    --wl-inv-type-bg: rgba(139,119,80,0.15);
+    --wl-inv-type-text: #a09070;
+    --wl-inv-note: #706850;
+    --wl-inv-qty: #c0a870;
+
+    --wl-goods: #8a7a50;
+
+    --wl-quest-border: rgba(160,120,220,0.35);
+    --wl-quest-title: #8070a8;
+    --wl-quest-name: #d4c8f0;
+    --wl-quest-goal: #a098c0;
+    --wl-quest-source: #706890;
+
+    --wl-thoughts-border: rgba(140,120,200,0.30);
+    --wl-thoughts-title: #7868a0;
+    --wl-thoughts-text: #b0b8d8;
+
+    --wl-npc-card: rgba(12,16,28,0.40);
+    --wl-npc-border: rgba(80,100,150,0.06);
+    --wl-npc-label: #a090c0;
+    --wl-npc-rc: #706088;
+    --wl-npc-tags-bg: rgba(130,150,200,0.08);
+    --wl-npc-tags-text: #8098b8;
+    --wl-npc-tags-border: rgba(130,150,200,0.10);
+
+    --wl-currency-gold-bg: rgba(212,168,64,0.14);
+    --wl-currency-gold-text: #f0d27a;
+    --wl-currency-gold-border: rgba(212,168,64,0.28);
+
+    --wl-currency-silver-bg: rgba(170,180,200,0.12);
+    --wl-currency-silver-text: #d6deef;
+    --wl-currency-silver-border: rgba(170,180,200,0.22);
+
+    --wl-currency-copper-bg: rgba(176,110,70,0.14);
+    --wl-currency-copper-text: #d8a080;
+    --wl-currency-copper-border: rgba(176,110,70,0.24);
+}
+
+body.wl-theme-seafoam {
+    --wl-bg-main: linear-gradient(135deg, #1a2426, #223236, #1b282c);
+    --wl-panel: rgba(28,40,42,0.76);
+    --wl-panel-2: rgba(36,52,55,0.74);
+    --wl-border: rgba(114,188,182,0.18);
+    --wl-border-soft: rgba(114,188,182,0.12);
+    --wl-title: #8fd5cf;
+    --wl-text-main: #e8fffb;
+    --wl-text-soft: #b8e2db;
+    --wl-text-dim: #8abbb4;
+    --wl-text-faint: #74a9a2;
+    --wl-sep: #4f7470;
+
+    --wl-tag-bg: rgba(120,210,198,0.14);
+    --wl-tag-text: #d6fff8;
+    --wl-tag-border: rgba(120,210,198,0.22);
+
+    --wl-tag-special-bg: rgba(150,220,210,0.14);
+    --wl-tag-special-text: #e5fffb;
+    --wl-tag-special-border: rgba(150,220,210,0.24);
+
+    --wl-inv-accent: #a8ddd4;
+    --wl-inv-bg: rgba(120,190,176,0.08);
+    --wl-inv-border: rgba(120,190,176,0.20);
+    --wl-inv-item-border: rgba(120,190,176,0.12);
+    --wl-inv-type-bg: rgba(120,190,176,0.16);
+    --wl-inv-type-text: #d8f6ef;
+    --wl-inv-note: #8db4ad;
+    --wl-inv-qty: #d4fff6;
+
+    --wl-goods: #9ed3c9;
+
+    --wl-quest-border: rgba(118,214,204,0.34);
+    --wl-quest-title: #8ad9cf;
+    --wl-quest-name: #defffa;
+    --wl-quest-goal: #b8e7e1;
+    --wl-quest-source: #8db7b0;
+
+    --wl-thoughts-border: rgba(140,220,210,0.28);
+    --wl-thoughts-title: #94d8d1;
+    --wl-thoughts-text: #d7f7f2;
+
+    --wl-npc-card: rgba(22,32,34,0.42);
+    --wl-npc-border: rgba(114,188,182,0.08);
+    --wl-npc-label: #c6ece6;
+    --wl-npc-rc: #89b6af;
+    --wl-npc-tags-bg: rgba(130,210,200,0.10);
+    --wl-npc-tags-text: #d8fffa;
+    --wl-npc-tags-border: rgba(130,210,200,0.14);
+
+    --wl-currency-gold-bg: rgba(230,198,118,0.18);
+    --wl-currency-gold-text: #fff0bf;
+    --wl-currency-gold-border: rgba(230,198,118,0.30);
+
+    --wl-currency-silver-bg: rgba(210,234,240,0.16);
+    --wl-currency-silver-text: #f2fdff;
+    --wl-currency-silver-border: rgba(210,234,240,0.26);
+
+    --wl-currency-copper-bg: rgba(198,140,112,0.16);
+    --wl-currency-copper-text: #ffd9c9;
+    --wl-currency-copper-border: rgba(198,140,112,0.26);
+}
+
+body.wl-theme-rose {
+    --wl-bg-main: linear-gradient(135deg, #221822, #2d1f31, #241826);
+    --wl-panel: rgba(36,24,38,0.78);
+    --wl-panel-2: rgba(46,30,49,0.76);
+    --wl-border: rgba(204,120,178,0.18);
+    --wl-border-soft: rgba(204,120,178,0.12);
+    --wl-title: #d29ad0;
+    --wl-text-main: #ffeefc;
+    --wl-text-soft: #ddb8db;
+    --wl-text-dim: #b98eb7;
+    --wl-text-faint: #a478a2;
+    --wl-sep: #684c68;
+
+    --wl-tag-bg: rgba(220,140,204,0.13);
+    --wl-tag-text: #ffe2fb;
+    --wl-tag-border: rgba(220,140,204,0.22);
+
+    --wl-tag-special-bg: rgba(180,140,230,0.15);
+    --wl-tag-special-text: #f0e2ff;
+    --wl-tag-special-border: rgba(180,140,230,0.24);
+
+    --wl-inv-accent: #d6a5ce;
+    --wl-inv-bg: rgba(214,140,194,0.07);
+    --wl-inv-border: rgba(214,140,194,0.20);
+    --wl-inv-item-border: rgba(214,140,194,0.11);
+    --wl-inv-type-bg: rgba(214,140,194,0.15);
+    --wl-inv-type-text: #f0d3eb;
+    --wl-inv-note: #b58cad;
+    --wl-inv-qty: #ffd5f8;
+
+    --wl-goods: #d8a5ce;
+
+    --wl-quest-border: rgba(186,128,230,0.34);
+    --wl-quest-title: #c39be9;
+    --wl-quest-name: #f0e3ff;
+    --wl-quest-goal: #d5bde8;
+    --wl-quest-source: #a887bd;
+
+    --wl-thoughts-border: rgba(214,140,214,0.28);
+    --wl-thoughts-title: #d0a0de;
+    --wl-thoughts-text: #f2dff7;
+
+    --wl-npc-card: rgba(30,20,34,0.42);
+    --wl-npc-border: rgba(204,120,178,0.08);
+    --wl-npc-label: #ebc9e8;
+    --wl-npc-rc: #b28db0;
+    --wl-npc-tags-bg: rgba(220,140,204,0.10);
+    --wl-npc-tags-text: #ffe2fb;
+    --wl-npc-tags-border: rgba(220,140,204,0.14);
+
+    --wl-currency-gold-bg: rgba(236,192,120,0.18);
+    --wl-currency-gold-text: #ffe8b2;
+    --wl-currency-gold-border: rgba(236,192,120,0.28);
+
+    --wl-currency-silver-bg: rgba(220,220,236,0.15);
+    --wl-currency-silver-text: #fff7ff;
+    --wl-currency-silver-border: rgba(220,220,236,0.24);
+
+    --wl-currency-copper-bg: rgba(210,138,112,0.15);
+    --wl-currency-copper-text: #ffd7cb;
+    --wl-currency-copper-border: rgba(210,138,112,0.24);
+}
+
+body.wl-theme-amber {
+    --wl-bg-main: linear-gradient(135deg, #1b1710, #241d14, #16120d);
+    --wl-panel: rgba(30,24,16,0.78);
+    --wl-panel-2: rgba(36,28,18,0.76);
+    --wl-border: rgba(170,130,70,0.22);
+    --wl-border-soft: rgba(170,130,70,0.12);
+    --wl-title: #c8a15f;
+    --wl-text-main: #f5e8c8;
+    --wl-text-soft: #d2bc92;
+    --wl-text-dim: #a98b60;
+    --wl-text-faint: #90764d;
+    --wl-sep: #5b4930;
+
+    --wl-tag-bg: rgba(188,150,90,0.13);
+    --wl-tag-text: #f7e5be;
+    --wl-tag-border: rgba(188,150,90,0.22);
+
+    --wl-tag-special-bg: rgba(220,170,100,0.14);
+    --wl-tag-special-text: #ffefc8;
+    --wl-tag-special-border: rgba(220,170,100,0.24);
+
+    --wl-inv-accent: #d4ae6b;
+    --wl-inv-bg: rgba(188,150,90,0.08);
+    --wl-inv-border: rgba(170,130,70,0.22);
+    --wl-inv-item-border: rgba(188,150,90,0.12);
+    --wl-inv-type-bg: rgba(188,150,90,0.16);
+    --wl-inv-type-text: #f2dcab;
+    --wl-inv-note: #aa8c63;
+    --wl-inv-qty: #ffd98d;
+
+    --wl-goods: #d3b078;
+
+    --wl-quest-border: rgba(200,150,90,0.34);
+    --wl-quest-title: #d5ad6d;
+    --wl-quest-name: #fff0cb;
+    --wl-quest-goal: #e0c08e;
+    --wl-quest-source: #aa8b61;
+
+    --wl-thoughts-border: rgba(210,160,100,0.28);
+    --wl-thoughts-title: #d3aa70;
+    --wl-thoughts-text: #f0e0bc;
+
+    --wl-npc-card: rgba(24,18,12,0.44);
+    --wl-npc-border: rgba(170,130,70,0.08);
+    --wl-npc-label: #e7cfa4;
+    --wl-npc-rc: #ab8f68;
+    --wl-npc-tags-bg: rgba(188,150,90,0.10);
+    --wl-npc-tags-text: #ffe9bc;
+    --wl-npc-tags-border: rgba(188,150,90,0.14);
+
+    --wl-currency-gold-bg: rgba(236,190,88,0.18);
+    --wl-currency-gold-text: #ffe59b;
+    --wl-currency-gold-border: rgba(236,190,88,0.30);
+
+    --wl-currency-silver-bg: rgba(220,210,190,0.14);
+    --wl-currency-silver-text: #fff3db;
+    --wl-currency-silver-border: rgba(220,210,190,0.24);
+
+    --wl-currency-copper-bg: rgba(188,124,84,0.16);
+    --wl-currency-copper-text: #ffd1b6;
+    --wl-currency-copper-border: rgba(188,124,84,0.26);
+}
+
+/* fallback */
+body:not(.wl-theme-midnight):not(.wl-theme-seafoam):not(.wl-theme-rose):not(.wl-theme-amber) {
+    --wl-bg-main: linear-gradient(135deg, #12161f, #181e2c, #141a26);
+    --wl-panel: rgba(16,20,32,0.74);
+    --wl-panel-2: rgba(20,26,40,0.72);
+    --wl-border: rgba(80,100,150,0.15);
+    --wl-border-soft: rgba(60,80,120,0.10);
+    --wl-title: #4a5680;
+    --wl-text-main: #e0e6fa;
+    --wl-text-soft: #8898bb;
+    --wl-text-dim: #6878a0;
+    --wl-text-faint: #6478a8;
+    --wl-sep: #3a4560;
+
+    --wl-tag-bg: rgba(90,120,190,0.12);
+    --wl-tag-text: #a0b4dc;
+    --wl-tag-border: rgba(90,120,190,0.18);
+
+    --wl-tag-special-bg: rgba(150,130,210,0.15);
+    --wl-tag-special-text: #c0b4e4;
+    --wl-tag-special-border: rgba(150,130,210,0.25);
+
+    --wl-inv-accent: #a08860;
+    --wl-inv-bg: rgba(139,119,80,0.06);
+    --wl-inv-border: rgba(139,119,80,0.20);
+    --wl-inv-item-border: rgba(139,119,80,0.10);
+    --wl-inv-type-bg: rgba(139,119,80,0.15);
+    --wl-inv-type-text: #a09070;
+    --wl-inv-note: #706850;
+    --wl-inv-qty: #c0a870;
+
+    --wl-goods: #8a7a50;
+
+    --wl-quest-border: rgba(160,120,220,0.35);
+    --wl-quest-title: #8070a8;
+    --wl-quest-name: #d4c8f0;
+    --wl-quest-goal: #a098c0;
+    --wl-quest-source: #706890;
+
+    --wl-thoughts-border: rgba(140,120,200,0.30);
+    --wl-thoughts-title: #7868a0;
+    --wl-thoughts-text: #b0b8d8;
+
+    --wl-npc-card: rgba(12,16,28,0.40);
+    --wl-npc-border: rgba(80,100,150,0.06);
+    --wl-npc-label: #a090c0;
+    --wl-npc-rc: #706088;
+    --wl-npc-tags-bg: rgba(130,150,200,0.08);
+    --wl-npc-tags-text: #8098b8;
+    --wl-npc-tags-border: rgba(130,150,200,0.10);
+
+    --wl-currency-gold-bg: rgba(212,168,64,0.14);
+    --wl-currency-gold-text: #f0d27a;
+    --wl-currency-gold-border: rgba(212,168,64,0.28);
+
+    --wl-currency-silver-bg: rgba(170,180,200,0.12);
+    --wl-currency-silver-text: #d6deef;
+    --wl-currency-silver-border: rgba(170,180,200,0.22);
+
+    --wl-currency-copper-bg: rgba(176,110,70,0.14);
+    --wl-currency-copper-text: #d8a080;
+    --wl-currency-copper-border: rgba(176,110,70,0.24);
+}
+
+/* =========================
+   Base
+========================= */
+
 .wl-hub {
-    background: linear-gradient(135deg, #12161f, #181e2c, #141a26);
+    background: var(--wl-bg-main);
     padding: 14px;
     margin: 12px 0;
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(100,140,200,0.06);
-    border: 1px solid rgba(80,100,150,0.15);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+    border: 1px solid var(--wl-border);
     font-family: inherit;
+    color: var(--wl-text-main);
 }
 
 .wl-title {
     text-align: center;
     font-size: 10px;
     letter-spacing: 4px;
-    color: #4a5680;
+    color: var(--wl-title);
     text-transform: uppercase;
     margin-bottom: 10px;
 }
@@ -25,12 +350,12 @@
     align-items: center;
     justify-content: space-between;
     font-size: 12px;
-    color: #8898bb;
+    color: var(--wl-text-soft);
     padding: 8px 12px;
     margin-bottom: 10px;
-    background: rgba(20,26,40,0.7);
+    background: var(--wl-panel-2);
     border-radius: 8px;
-    border: 1px solid rgba(80,110,160,0.1);
+    border: 1px solid var(--wl-border-soft);
     flex-wrap: wrap;
     gap: 8px;
 }
@@ -42,23 +367,23 @@
     flex-wrap: wrap;
 }
 
-.wl-header-left b { color: #d0d8f0; }
-.wl-header-right { color: #6478a8; }
-.wl-sep { color: #3a4560; }
+.wl-header-left b { color: var(--wl-text-main); }
+.wl-header-right { color: var(--wl-text-faint); }
+.wl-sep { color: var(--wl-sep); }
 
 /* Sections */
 .wl-section {
-    background: rgba(16,20,32,0.7);
+    background: var(--wl-panel);
     border-radius: 8px;
     padding: 10px 14px;
     margin-bottom: 6px;
-    border: 1px solid rgba(60,80,120,0.1);
+    border: 1px solid var(--wl-border-soft);
 }
 
 .wl-section-title {
     font-weight: 700;
     font-size: 10px;
-    color: #6878a0;
+    color: var(--wl-text-dim);
     letter-spacing: 2px;
     text-transform: uppercase;
     margin-bottom: 8px;
@@ -84,7 +409,7 @@
 .wl-player-name {
     font-size: 14px;
     font-weight: 700;
-    color: #e0e6fa;
+    color: var(--wl-text-main);
 }
 
 .wl-player-tags {
@@ -94,18 +419,18 @@
 }
 
 .wl-tag {
-    background: rgba(90,120,190,0.12);
-    color: #a0b4dc;
+    background: var(--wl-tag-bg);
+    color: var(--wl-tag-text);
     padding: 3px 10px;
     border-radius: 999px;
     font-size: 10px;
-    border: 1px solid rgba(90,120,190,0.18);
+    border: 1px solid var(--wl-tag-border);
 }
 
 .wl-tag-special {
-    background: rgba(150,130,210,0.15);
-    color: #c0b4e4;
-    border-color: rgba(150,130,210,0.25);
+    background: var(--wl-tag-special-bg);
+    color: var(--wl-tag-special-text);
+    border-color: var(--wl-tag-special-border);
 }
 
 .wl-tag-status-wanted {
@@ -190,7 +515,7 @@
 
 .wl-seal-label {
     font-size: 8px;
-    color: #6878a0;
+    color: var(--wl-text-dim);
     font-style: italic;
 }
 
@@ -201,9 +526,9 @@
     justify-content: space-between;
     padding: 6px 10px;
     margin-bottom: 4px;
-    background: rgba(12,16,28,0.4);
+    background: var(--wl-npc-card);
     border-radius: 6px;
-    border: 1px solid rgba(80,100,150,0.06);
+    border: 1px solid var(--wl-npc-border);
     gap: 8px;
     flex-wrap: wrap;
 }
@@ -246,17 +571,17 @@
 }
 
 .wl-npc-icon { font-size: 14px; }
-.wl-npc-name { font-size: 12px; color: #e0e6fa; font-weight: 600; }
+.wl-npc-name { font-size: 12px; color: var(--wl-text-main); font-weight: 600; }
 .wl-npc-rom { font-size: 11px; }
 
 .wl-npc-label {
     font-size: 10px;
-    color: #a090c0;
+    color: var(--wl-npc-label);
 }
 
 .wl-npc-rc {
     font-size: 9px;
-    color: #706088;
+    color: var(--wl-npc-rc);
     margin-left: 4px;
 }
 
@@ -266,22 +591,22 @@
 }
 
 .wl-npc-tags {
-    background: rgba(130,150,200,0.08);
-    color: #8098b8;
+    background: var(--wl-npc-tags-bg);
+    color: var(--wl-npc-tags-text);
     padding: 3px 10px;
     border-radius: 999px;
     font-size: 9px;
-    border: 1px solid rgba(130,150,200,0.1);
+    border: 1px solid var(--wl-npc-tags-border);
 }
 
 /* Inventory — bag style, 3 columns compact */
 .wl-inv-bag {
-    background: rgba(16,20,32,0.7);
+    background: var(--wl-panel);
     border-radius: 10px;
     padding: 10px 12px;
     margin-bottom: 6px;
-    border: 1px solid rgba(139,119,80,0.2);
-    background-image: linear-gradient(135deg, rgba(139,119,80,0.05) 0%, transparent 50%);
+    border: 1px solid var(--wl-inv-border);
+    background-image: linear-gradient(135deg, color-mix(in srgb, var(--wl-inv-accent) 10%, transparent) 0%, transparent 50%);
 }
 
 .wl-inv-title-row {
@@ -296,7 +621,7 @@
 .wl-inv-title {
     font-weight: 700;
     font-size: 10px;
-    color: #a08860;
+    color: var(--wl-inv-accent);
     letter-spacing: 2px;
     text-transform: uppercase;
     margin-bottom: 0;
@@ -313,9 +638,9 @@
     align-items: flex-start;
     gap: 6px;
     padding: 5px 7px;
-    background: rgba(139,119,80,0.06);
+    background: var(--wl-inv-bg);
     border-radius: 6px;
-    border: 1px solid rgba(139,119,80,0.1);
+    border: 1px solid var(--wl-inv-item-border);
     min-width: 0;
     min-height: 52px;
 }
@@ -323,7 +648,7 @@
 .wl-inv-qty {
     font-size: 10px;
     font-weight: 700;
-    color: #c0a870;
+    color: var(--wl-inv-qty);
     flex-shrink: 0;
     min-width: 18px;
 }
@@ -338,7 +663,7 @@
 
 .wl-inv-name {
     font-size: 11px;
-    color: #dce4ff;
+    color: var(--wl-text-main);
     line-height: 1.2;
     white-space: normal;
     overflow-wrap: anywhere;
@@ -352,18 +677,18 @@
 }
 
 .wl-inv-type {
-    background: rgba(139,119,80,0.15);
-    color: #a09070;
+    background: var(--wl-inv-type-bg);
+    color: var(--wl-inv-type-text);
     padding: 1px 6px;
     border-radius: 999px;
     font-size: 8px;
-    border: 1px solid rgba(139,119,80,0.2);
+    border: 1px solid var(--wl-inv-item-border);
     flex-shrink: 0;
 }
 
 .wl-inv-note {
     font-size: 8px;
-    color: #706850;
+    color: var(--wl-inv-note);
     font-style: italic;
     line-height: 1.2;
     white-space: normal;
@@ -398,65 +723,65 @@
 }
 
 .wl-gold {
-    background: rgba(212,168,64,0.14);
-    color: #f0d27a;
-    border-color: rgba(212,168,64,0.28);
+    background: var(--wl-currency-gold-bg);
+    color: var(--wl-currency-gold-text);
+    border-color: var(--wl-currency-gold-border);
 }
 
 .wl-silver {
-    background: rgba(170,180,200,0.12);
-    color: #d6deef;
-    border-color: rgba(170,180,200,0.22);
+    background: var(--wl-currency-silver-bg);
+    color: var(--wl-currency-silver-text);
+    border-color: var(--wl-currency-silver-border);
 }
 
 .wl-copper {
-    background: rgba(176,110,70,0.14);
-    color: #d8a080;
-    border-color: rgba(176,110,70,0.24);
+    background: var(--wl-currency-copper-bg);
+    color: var(--wl-currency-copper-text);
+    border-color: var(--wl-currency-copper-border);
 }
 
 .wl-currency-goods-inline {
     font-size: 9px;
-    color: #8a7a50;
+    color: var(--wl-goods);
     font-style: italic;
 }
 
 /* Quest */
 .wl-quest {
-    border-left: 3px solid rgba(160,120,220,0.35);
+    border-left: 3px solid var(--wl-quest-border);
 }
 
-.wl-quest .wl-section-title { color: #8070a8; }
+.wl-quest .wl-section-title { color: var(--wl-quest-title); }
 
 .wl-quest-name {
     font-size: 13px;
     font-weight: 700;
-    color: #d4c8f0;
+    color: var(--wl-quest-name);
     margin-bottom: 4px;
 }
 
 .wl-quest-goal {
     font-size: 11px;
-    color: #a098c0;
+    color: var(--wl-quest-goal);
     margin-bottom: 3px;
 }
 
 .wl-quest-source {
     font-size: 10px;
-    color: #706890;
+    color: var(--wl-quest-source);
     font-style: italic;
 }
 
 /* Thoughts */
 .wl-thoughts {
-    border-left: 3px solid rgba(140,120,200,0.3);
+    border-left: 3px solid var(--wl-thoughts-border);
 }
 
-.wl-thoughts .wl-section-title { color: #7868a0; }
+.wl-thoughts .wl-section-title { color: var(--wl-thoughts-title); }
 
 .wl-thoughts-text {
     font-size: 12px;
-    color: #b0b8d8;
+    color: var(--wl-thoughts-text);
     font-style: italic;
     line-height: 1.6;
 }
